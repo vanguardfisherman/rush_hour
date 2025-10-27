@@ -1,4 +1,5 @@
 // src/game/types/index.ts
+
 export type Size = 6 | 7;
 export type Dir = 'h' | 'v';
 export type PieceLen = 2 | 3 | 4;
@@ -17,11 +18,23 @@ export type ExitSpec = { side: ExitSide; index: number };
 
 export type Difficulty = 'easy' | 'normal' | 'hard' | 'expert';
 
+// Asegúrate de tener la exportación de AssetId aquí
+export type AssetId =
+    | 'player_len2_red'
+    | 'car_len2_blue'
+    | 'car_len2_gray'
+    | 'car_len3_red'
+    | 'car_len3_purple'
+    | 'car_len3_mili'
+    | 'car_len4_red'
+    | 'car_len4_yellow'
+    | 'car_len4_gray';
+
 export type LevelDef = {
     id: string;
     size: Size;
     pieces: PieceSpec[];
     exit: ExitSpec;
-    difficulty?: Difficulty; // ← opcional para que no rompa
+    difficulty?: Difficulty; // opcional
     name?: string;
 };
