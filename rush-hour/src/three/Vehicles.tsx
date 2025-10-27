@@ -1,11 +1,10 @@
-// src/three/Vehicles.tsx
 import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF, Center } from '@react-three/drei';
 import { Box3, Vector3, Group, Plane } from 'three';
 import { useGame } from '../game/store';
 import { CAR_ASSET_PATHS } from '../game/types/assets';
-import type { PieceSpec } from '../game/types';
+import type { PieceSpec, AssetId } from '../game/types';  // Asegúrate de que 'AssetId' esté importado
 import { canPlace, clampRangeWithBlocks } from '../game/logic';
 
 const SCALE_PAD = 0.82;
@@ -42,12 +41,33 @@ function cloneMaterialsFor(o: any, tweak?: (m: any) => void) {
     });
 }
 
+// Helper para validar que 'asset' es un AssetId
+function isValidAssetId(asset: string): asset is AssetId {
+    return [
+        'player_len2_red',
+        'car_len2_blue',
+        'car_len2_gray',
+        'car_len3_red',
+        'car_len3_purple',
+        'car_len3_mili',
+        'car_len4_red',
+        'car_len4_yellow',
+        'car_len4_gray',
+    ].includes(asset);
+}
+
 function Vehicle({ piece }: { piece: PieceSpec }) {
     const size   = useGame(s => s.size);
     const pieces = useGame(s => s.pieces);
     const moveTo = useGame(s => s.moveTo);
     const setWon = useGame(s => s.setWon);
     const exit   = useGame(s => s.exit); // puede ser null al cargar
+
+    // Validamos si el 'asset' es válido antes de cargar el GLTF
+    if (!isValidAssetId(piece.asset)) {
+        console.error(`Invalid asset: ${piece.asset}`);
+        return null; // No renderizamos el vehículo si el asset es inválido
+    }
 
     // cargar GLB
     const { scene } = useGLTF(CAR_ASSET_PATHS[piece.asset]);
