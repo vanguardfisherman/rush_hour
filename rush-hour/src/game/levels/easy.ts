@@ -12,15 +12,15 @@ export const EASY_LEVELS: LevelDef[] = [
         exit: { side: 'top', index: 3 },
         pieces: [
             { id: 'P', len: 2, dir: 'v', x: 3, y: 3, asset: 'player_len2_red' },
-            { id: 'A', len: 2, dir: 'h', x: 3, y: 2, asset: 'car_len2_blue' },
-            { id: 'N1', len: 4, dir: 'v', x: 0, y: 0, asset: 'car_len4_gray' },
-            { id: 'N13', len: 3, dir: 'v', x: 2, y: 2, asset: 'car_len3_purple' },
-            { id: 'N18', len: 3, dir: 'v', x: 5, y: 1, asset: 'car_len3_purple' },
-            { id: 'N25', len: 2, dir: 'h', x: 0, y: 4, asset: 'car_len2_gray' },
-            { id: 'N3', len: 3, dir: 'v', x: 1, y: 1, asset: 'car_len3_red' },
-            { id: 'N35', len: 3, dir: 'h', x: 2, y: 1, asset: 'car_len3_red' },
-            { id: 'N7', len: 4, dir: 'h', x: 1, y: 5, asset: 'car_len4_yellow' },
-            { id: 'N9', len: 3, dir: 'h', x: 2, y: 0, asset: 'car_len3_purple' }
+            { id: 'A', len: 2, dir: 'h', x: 2, y: 2, asset: 'car_len2_blue' },
+            { id: 'N15', len: 3, dir: 'v', x: 2, y: 3, asset: 'car_len3_mili' },
+            { id: 'N18', len: 4, dir: 'v', x: 4, y: 2, asset: 'car_len4_yellow' },
+            { id: 'N2', len: 2, dir: 'h', x: 4, y: 0, asset: 'car_len2_blue' },
+            { id: 'N20', len: 3, dir: 'v', x: 0, y: 0, asset: 'car_len3_purple' },
+            { id: 'N33', len: 3, dir: 'h', x: 1, y: 1, asset: 'car_len3_purple' },
+            { id: 'N4', len: 3, dir: 'v', x: 5, y: 1, asset: 'car_len3_purple' },
+            { id: 'N5', len: 3, dir: 'v', x: 1, y: 2, asset: 'car_len3_mili' },
+            { id: 'N6', len: 3, dir: 'h', x: 1, y: 0, asset: 'car_len3_mili' }
         ],
     },
 
@@ -31,17 +31,15 @@ export const EASY_LEVELS: LevelDef[] = [
         exit: { side: 'top', index: 3 },
         pieces: [
             { id: 'P', len: 2, dir: 'v', x: 3, y: 3, asset: 'player_len2_red' },
-            { id: 'A', len: 2, dir: 'h', x: 3, y: 2, asset: 'car_len2_blue' },
-            { id: 'N1', len: 3, dir: 'h', x: 2, y: 1, asset: 'car_len3_mili' },
-            { id: 'N10', len: 3, dir: 'v', x: 5, y: 0, asset: 'car_len3_red' },
-            { id: 'N16', len: 2, dir: 'h', x: 4, y: 5, asset: 'car_len2_gray' },
-            { id: 'N166', len: 2, dir: 'h', x: 3, y: 0, asset: 'car_len2_blue' },
-            { id: 'N17', len: 2, dir: 'h', x: 0, y: 5, asset: 'car_len2_gray' },
-            { id: 'N22', len: 2, dir: 'h', x: 4, y: 3, asset: 'car_len2_blue' },
-            { id: 'N37', len: 2, dir: 'h', x: 0, y: 2, asset: 'car_len2_gray' },
-            { id: 'N4', len: 3, dir: 'h', x: 0, y: 4, asset: 'car_len3_red' },
-            { id: 'N5', len: 2, dir: 'v', x: 2, y: 2, asset: 'car_len2_blue' },
-            { id: 'N7', len: 3, dir: 'h', x: 0, y: 0, asset: 'car_len3_purple' }
+            { id: 'A', len: 3, dir: 'h', x: 3, y: 2, asset: 'car_len3_mili' },
+            { id: 'N1', len: 2, dir: 'v', x: 4, y: 0, asset: 'car_len2_blue' },
+            { id: 'N16', len: 3, dir: 'h', x: 1, y: 0, asset: 'car_len3_red' },
+            { id: 'N2', len: 2, dir: 'v', x: 2, y: 3, asset: 'car_len2_gray' },
+            { id: 'N21', len: 2, dir: 'v', x: 5, y: 0, asset: 'car_len2_blue' },
+            { id: 'N26', len: 3, dir: 'h', x: 2, y: 5, asset: 'car_len3_purple' },
+            { id: 'N38', len: 3, dir: 'v', x: 1, y: 2, asset: 'car_len3_mili' },
+            { id: 'N4', len: 3, dir: 'h', x: 1, y: 1, asset: 'car_len3_red' },
+            { id: 'N6', len: 3, dir: 'v', x: 0, y: 1, asset: 'car_len3_red' }
         ],
     },
 
@@ -52,15 +50,15 @@ export const EASY_LEVELS: LevelDef[] = [
         exit: { side: 'top', index: 3 },
         pieces: [
             { id: 'P', len: 2, dir: 'v', x: 3, y: 3, asset: 'player_len2_red' },
-            { id: 'A', len: 3, dir: 'h', x: 3, y: 2, asset: 'car_len3_red' },
-            { id: 'N12', len: 2, dir: 'h', x: 0, y: 3, asset: 'car_len2_blue' },
-            { id: 'N2', len: 2, dir: 'v', x: 0, y: 1, asset: 'car_len2_blue' },
-            { id: 'N219', len: 2, dir: 'h', x: 2, y: 0, asset: 'car_len2_blue' },
-            { id: 'N3', len: 3, dir: 'v', x: 1, y: 0, asset: 'car_len3_red' },
-            { id: 'N4', len: 2, dir: 'h', x: 4, y: 0, asset: 'car_len2_gray' },
-            { id: 'N48', len: 3, dir: 'h', x: 3, y: 1, asset: 'car_len3_purple' },
-            { id: 'N53', len: 2, dir: 'v', x: 5, y: 3, asset: 'car_len2_blue' },
-            { id: 'N6', len: 3, dir: 'h', x: 0, y: 5, asset: 'car_len3_red' }
+            { id: 'A', len: 2, dir: 'h', x: 3, y: 2, asset: 'car_len2_gray' },
+            { id: 'N1', len: 2, dir: 'h', x: 4, y: 5, asset: 'car_len2_blue' },
+            { id: 'N11', len: 4, dir: 'v', x: 2, y: 2, asset: 'car_len4_red' },
+            { id: 'N19', len: 3, dir: 'h', x: 3, y: 1, asset: 'car_len3_mili' },
+            { id: 'N2', len: 3, dir: 'h', x: 1, y: 0, asset: 'car_len3_mili' },
+            { id: 'N27', len: 2, dir: 'v', x: 0, y: 1, asset: 'car_len2_blue' },
+            { id: 'N32', len: 2, dir: 'h', x: 4, y: 3, asset: 'car_len2_blue' },
+            { id: 'N6', len: 2, dir: 'v', x: 0, y: 3, asset: 'car_len2_blue' },
+            { id: 'N8', len: 3, dir: 'v', x: 1, y: 3, asset: 'car_len3_purple' }
         ],
     },
 
