@@ -1,227 +1,228 @@
-/* que la app ocupe toda la ventana */
+/* Layout general */
 .app {
     width: 100vw;
     height: 100vh;
     position: relative;
     overflow: hidden;
-    background: #1f1f1f;
+    background: radial-gradient(circle at top, #2b2b2b 0%, #171717 55%, #0f0f0f 100%);
+    color: #f4f4f4;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-/* contenedor del canvas 3D a pantalla completa */
 .stage {
     position: absolute;
-    inset: 0; /* top: 0; right: 0; bottom: 0; left: 0 */
+    inset: 0;
 }
-/* Permite que los gestos táctiles lleguen al canvas sin que el navegador
-   intente hacer scroll o zoom por defecto. Esto es crucial para que el drag
-   de los vehículos responda correctamente en pantallas táctiles. */
+
 .stage canvas {
     touch-action: none;
     -ms-touch-action: none;
 }
 
-/* HUD flotante con flexbox para mayor flexibilidad */
+/* HUD */
 .hud {
     position: absolute;
-    left: 12px;
-    top: 12px;
-    z-index: 10;
-    background: rgba(20, 20, 20, 0.6);
-    backdrop-filter: blur(6px);
-    padding: 10px 12px;
-    border-radius: 12px;
-    color: #eee;
-    font-family: system-ui, sans-serif;
+    inset: 0;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: min(420px, calc(100vw - 24px));
+    justify-content: center;
+    align-items: flex-end;
+    padding: 18px 18px 24px;
+    pointer-events: none;
 }
 
-.hud .row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-}
-.hud .field-group {
+.hud-shell {
+    width: min(520px, 100%);
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    min-width: 140px;
-    flex: 1 1 150px;
+    gap: 18px;
+    pointer-events: auto;
 }
 
-.hud .field-group label {
+.hud-block {
+    background: rgba(18, 19, 26, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    padding: 22px 24px;
+    display: grid;
+    gap: 18px;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+}
+
+.hud-block__header {
     font-size: 0.85rem;
-    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.24em;
+    font-weight: 700;
+    color: #93a3d2;
 }
 
-.hud .actions {
-    display: flex;
-    flex-wrap: wrap;
+.hud-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+}
+
+.hud-field {
+    display: grid;
     gap: 8px;
-    flex: 1 1 100%;
 }
 
-.hud .actions button {
-    flex: 1 1 45%;
-}
-.hud .status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1 1 auto;
-    min-width: 160px;
+.hud-field__label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c6d0f0;
 }
 
 .hud select,
 .hud button {
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    background: #222;
-    color: #eee;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 16px;
+    font-size: 0.98rem;
+    font-weight: 600;
+    background: rgba(36, 38, 46, 0.92);
+    color: inherit;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    min-height: 48px;
+}
+
+.hud select {
+    appearance: none;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.hud select:focus {
+    outline: none;
+    border-color: #7d8cff;
+    box-shadow: 0 0 0 3px rgba(125, 140, 255, 0.28);
+}
+
+.hud-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.hud button {
+    cursor: pointer;
+    border: none;
+    background: linear-gradient(135deg, #ff7a7a 0%, #845ef7 100%);
+    box-shadow: 0 16px 30px rgba(132, 94, 247, 0.4);
+}
+
+.hud button:hover:not(:disabled),
+.hud button:focus-visible:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 36px rgba(132, 94, 247, 0.48);
+}
+
+.hud button:focus-visible {
+    outline: none;
 }
 
 .hud button:disabled {
-    opacity: 0.5;
     cursor: not-allowed;
+    opacity: 0.55;
+    box-shadow: none;
+    transform: none;
+}
+
+.hud button.active {
+    background: linear-gradient(135deg, #4fc3f7 0%, #845ef7 100%);
+    box-shadow: 0 18px 32px rgba(79, 195, 247, 0.45);
+}
+
+.hud-status {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.hud-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgba(33, 34, 43, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-metric__label {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #98a8d8;
+}
+
+.hud-metric__value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
 }
 
 .badge {
-    margin-left: 0;
-    padding: 2px 8px;
-    background: #1f6;
-    color: #021;
+    align-self: flex-start;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #8df38d 0%, #20c997 100%);
+    color: #082e24;
     border-radius: 999px;
     font-weight: 700;
+    letter-spacing: 0.05em;
+    font-size: 0.9rem;
 }
 
-/* Responsividad: Ajuste para móviles y tablets */
+/* Responsividad */
+@media (max-width: 540px) {
+    .hud-shell {
+        gap: 16px;
+    }
 
-/* Mobile Portrait */
-@media (max-width: 767px) {
+    .hud-block {
+        padding: 20px;
+    }
+
+    .hud-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 600px) {
+    .hud-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hud-actions {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 960px) {
     .hud {
-        left: 8px;
-        right: 8px;
-        top: auto;
-        bottom: 12px;
-        padding: 10px;
-        font-size: 14px;
-        width: auto;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 24px;
     }
 
-    .app {
-        background: #181818;
+    .hud-shell {
+        width: 420px;
+        margin-left: 0;
+        gap: 20px;
     }
 
-    .stage {
-        inset: 0;
+    .hud-block {
+        padding: 22px 24px;
     }
+}
 
-    .hud .row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .hud .field-group,
-    .hud .actions,
-    .hud .status {
-        width: 100%;
-        flex: 1 1 100%;
-    }
+@media (prefers-reduced-motion: reduce) {
     .hud select,
-
     .hud button {
-        font-size: 15px;
-        width: auto;
-    }
-    .hud .actions {
-        flex: 1 1 auto;
-        max-width: 100%;
-    }
-    .hud .actions button {
-        flex: 0 1 auto;
-    }
-
-
-    .badge {
-        font-size: 12px;
-        padding: 2px 6px;
-    }
-}
-
-/* Tablet Landscape and Up */
-@media (min-width: 768px) and (max-width: 1024px) {
-    .hud {
-        left: 12px;
-        top: 12px;
-        padding: 8px 12px;
-        font-size: 16px;
-    }
-
-    .app {
-        background: #202020;
-    }
-
-    .stage {
-        inset: 0;
-    }
-
-    .hud button {
-        font-size: 14px;
-    }
-
-    .badge {
-        font-size: 14px;
-        padding: 4px 8px;
-    }
-}
-
-/* Desktop and Large Tablets */
-@media (min-width: 1025px) {
-    .hud {
-        left: 12px;
-        top: 12px;
-        padding: 8px 14px;
-        font-size: 18px;
-    }
-
-    .stage {
-        inset: 0;
-    }
-
-    .app {
-        background: #1f1f1f;
-    }
-    .hud .field-group {
-        flex-direction: row;
-        align-items: center;
-    }
-
-    .hud .field-group label {
-        margin-right: 10px;
-        font-size: 1rem;
-    }
-
-    .hud select,
-
-
-    .hud button {
-        font-size: 16px;
-        width: auto;
-    }
-
-    .hud .actions button {
-        flex: 0 1 auto;
-    }
-
-    .badge {
-        font-size: 16px;
-        padding: 6px 10px;
+        transition: none;
     }
 }
