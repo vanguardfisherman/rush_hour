@@ -199,6 +199,115 @@
     }
 }
 
+/* Modo móvil forzado */
+.app--mobile-mode .hud {
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+
+.app--mobile-mode .hud-shell {
+    width: 100%;
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(72px, 22%) minmax(0, 1fr) minmax(72px, 22%);
+    gap: 12px;
+    align-items: stretch;
+}
+
+.app--mobile-mode .hud-block {
+    padding: 14px 16px;
+    border-radius: 16px;
+    gap: 12px;
+    background: rgba(18, 19, 26, 0.78);
+    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.28);
+}
+
+.app--mobile-mode .hud select,
+.app--mobile-mode .hud button {
+    min-height: 38px;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+}
+
+.app--mobile-mode .hud-block--config {
+    grid-column: 2;
+    width: 100%;
+    max-width: 420px;
+}
+
+.app--mobile-mode .hud-block--actions {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(18, 19, 26, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 24px rgba(0, 0, 0, 0.28);
+    min-width: 0;
+    max-width: 140px;
+}
+
+.app--mobile-mode .hud-block--actions .hud-block__header {
+    text-align: center;
+    letter-spacing: 0.2em;
+}
+
+.app--mobile-mode .hud-block--actions .hud-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.app--mobile-mode .hud-block--actions button {
+    font-size: 0.74rem;
+    padding: 8px 10px;
+}
+
+.app--mobile-mode .hud-block--status {
+    grid-column: 3;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    max-width: 140px;
+}
+
+.app--mobile-mode .hud-block--status .hud-status {
+    align-items: center;
+}
+
+.app--mobile-mode .hud-metric {
+    align-items: center;
+    gap: 8px;
+}
+
+.app--mobile-mode .hud-metric__label {
+    letter-spacing: 0.1em;
+}
+
+.app--mobile-mode .hud-shell > .hud-block {
+    pointer-events: auto;
+}
+
+@media (max-width: 720px) {
+    .app--mobile-mode .hud-shell {
+        grid-template-columns: minmax(64px, 26%) minmax(0, 1fr) minmax(64px, 26%);
+        gap: 10px;
+    }
+
+    .app--mobile-mode .hud-block--config {
+        padding: 12px 14px;
+    }
+
+    .app--mobile-mode .hud select,
+    .app--mobile-mode .hud button {
+        font-size: 0.78rem;
+    }
+}
+
 @media (max-width: 540px) {
     .hud {
         justify-content: flex-start;

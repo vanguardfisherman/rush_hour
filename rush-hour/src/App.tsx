@@ -228,10 +228,10 @@ export default function App() {
     }, []);
 
     return (
-        <div className="app">
+        <div className={`app${mobileMode ? ' app--mobile-mode' : ''}`}>
             <div className="hud">
                 <div className="hud-shell">
-                    <section className="hud-block">
+                    <section className="hud-block hud-block--config">
                         <header className="hud-block__header">Configuración</header>
                         <div className="hud-grid">
                             <label className="hud-field" htmlFor="difficulty-select">
@@ -269,7 +269,7 @@ export default function App() {
                         </div>
                     </section>
 
-                    <section className="hud-block">
+                    <section className="hud-block hud-block--actions">
                         <header className="hud-block__header">Acciones</header>
                         <div className="hud-actions">
                             <button onClick={resetLevel} disabled={isSolving}>Reiniciar</button>
@@ -280,7 +280,7 @@ export default function App() {
                                 className={mobileMode ? 'active' : undefined}
                                 aria-pressed={mobileMode}
                             >
-                                {mobileMode ? 'Desktop version' : 'Mobile version'}
+                                {mobileMode ? 'Versión escritorio' : 'Versión móvil'}
                             </button>
                         </div>
                     </section>
