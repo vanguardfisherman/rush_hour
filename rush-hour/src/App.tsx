@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useGame } from './game/store';
 import type { LevelDef } from './game/types';
 import { EASY_LEVELS, NORMAL_LEVELS } from './game/levels';
@@ -9,6 +9,94 @@ import DifficultyBadge from './ui/DifficultyBadge';
 
 const DIFFS = ['easy', 'normal'] as const;
 type Diff = (typeof DIFFS)[number];
+
+type ExtendedScreenOrientation = ScreenOrientation & {
+    lock?: (orientation: string) => Promise<void>;
+    unlock?: () => void;
+};
+
+const getOrientation = (): ExtendedScreenOrientation | undefined => {
+    if (typeof window === 'undefined') {
+        return undefined;
+    }
+
+    return window.screen?.orientation as ExtendedScreenOrientation | undefined;
+};
+
+const unlockOrientation = () => {
+    const orientation = getOrientation();
+    if (orientation && typeof orientation.unlock === 'function') {
+        try {
+            orientation.unlock();
+        } catch (err) {
+            console.warn('No se pudo liberar el bloqueo de orientación.', err);
+        }
+    }
+};
+
+const requestFullscreen = async (element: HTMLElement) => {
+    const anyElement = element as HTMLElement & {
+        webkitRequestFullscreen?: () => Promise<void> | void;
+        msRequestFullscreen?: () => Promise<void> | void;
+    };
+
+    if (element.requestFullscreen) {
+        await element.requestFullscreen();
+        return true;
+    }
+
+    if (anyElement.webkitRequestFullscreen) {
+        const result = anyElement.webkitRequestFullscreen.call(element);
+        if (result instanceof Promise) {
+            await result;
+        }
+        return true;
+    }
+
+    if (anyElement.msRequestFullscreen) {
+        const result = anyElement.msRequestFullscreen.call(element);
+        if (result instanceof Promise) {
+            await result;
+        }
+        return true;
+    }
+
+    return false;
+};
+
+const exitFullscreen = async () => {
+    if (typeof document === 'undefined') {
+        return false;
+    }
+
+    const doc = document as Document & {
+        webkitExitFullscreen?: () => Promise<void> | void;
+        msExitFullscreen?: () => Promise<void> | void;
+    };
+
+    if (document.fullscreenElement && document.exitFullscreen) {
+        await document.exitFullscreen();
+        return true;
+    }
+
+    if (document.fullscreenElement && doc.webkitExitFullscreen) {
+        const result = doc.webkitExitFullscreen.call(document);
+        if (result instanceof Promise) {
+            await result;
+        }
+        return true;
+    }
+
+    if (document.fullscreenElement && doc.msExitFullscreen) {
+        const result = doc.msExitFullscreen.call(document);
+        if (result instanceof Promise) {
+            await result;
+        }
+        return true;
+    }
+
+    return false;
+};
 
 export default function App() {
     // === store ===
@@ -30,6 +118,73 @@ export default function App() {
     );
     const [idx, setIdx] = useState(0);
     const [mobileMode, setMobileMode] = useState(false);
+    const ownsFullscreenRef = useRef(false);
+
+    const disableMobileMode = async () => {
+        unlockOrientation();
+
+        if (ownsFullscreenRef.current) {
+            try {
+                await exitFullscreen();
+            } catch (err) {
+                console.warn('No se pudo salir de pantalla completa.', err);
+            }
+        }
+
+        ownsFullscreenRef.current = false;
+        setMobileMode(false);
+    };
+
+    const handleToggleMobileMode = async () => {
+        if (typeof window === 'undefined' || typeof document === 'undefined') {
+            return;
+        }
+
+        if (mobileMode) {
+            await disableMobileMode();
+            return;
+        }
+
+        const orientation = getOrientation();
+
+        if (!orientation || typeof orientation.lock !== 'function') {
+            window.alert('El bloqueo de orientación solo está disponible en navegadores móviles compatibles.');
+            return;
+        }
+
+        const wasFullscreen = Boolean(document.fullscreenElement);
+
+        if (!wasFullscreen) {
+            try {
+                const fullscreenGranted = await requestFullscreen(document.documentElement);
+                if (!fullscreenGranted) {
+                    window.alert('Tu navegador no soporta entrar en pantalla completa automáticamente.');
+                    return;
+                }
+            } catch (error) {
+                console.warn('No se pudo entrar en pantalla completa.', error);
+                window.alert('No se pudo activar la pantalla completa, requisito para el modo móvil.');
+                return;
+            }
+        }
+
+        try {
+            await orientation.lock('landscape');
+            ownsFullscreenRef.current = !wasFullscreen;
+            setMobileMode(true);
+        } catch (error) {
+            console.warn('No se pudo bloquear la orientación.', error);
+            window.alert('No se pudo bloquear la orientación de la pantalla. Algunos navegadores solo lo permiten cuando la aplicación está instalada o en dispositivos móviles.');
+
+            if (!wasFullscreen && document.fullscreenElement) {
+                try {
+                    await exitFullscreen();
+                } catch (err) {
+                    console.warn('No se pudo salir de pantalla completa tras fallar el bloqueo.', err);
+                }
+            }
+        }
+    };
 
     const onPickLevel = (i: number) => {
         setIdx(i);
@@ -43,61 +198,33 @@ export default function App() {
     }, []); // una vez al montar
 
     useEffect(() => {
-        if (typeof window === 'undefined') {
+        if (typeof document === 'undefined') {
             return;
         }
 
-        const orientation = window.screen?.orientation as (ScreenOrientation & {
-            lock?: (orientation: string) => Promise<void>;
-            unlock?: () => void;
-        }) | undefined;
-
-        if (!mobileMode) {
-            if (orientation && typeof orientation.unlock === 'function') {
-                try {
-                    orientation.unlock();
-                } catch (err) {
-                    console.warn('No se pudo liberar el bloqueo de orientación.', err);
-                }
-            }
-            return;
-        }
-
-        let cancelled = false;
-
-        const lockOrientation = async () => {
-            if (!orientation || typeof orientation.lock !== 'function') {
-                window.alert('Tu navegador no soporta el bloqueo de orientación.');
-                if (!cancelled) {
-                    setMobileMode(false);
-                }
-                return;
-            }
-
-            try {
-                await orientation.lock('landscape');
-            } catch (error) {
-                console.warn('No se pudo bloquear la orientación.', error);
-                window.alert('No se pudo bloquear la orientación de la pantalla.');
-                if (!cancelled) {
-                    setMobileMode(false);
-                }
+        const onFullscreenChange = () => {
+            if (!document.fullscreenElement && mobileMode) {
+                unlockOrientation();
+                ownsFullscreenRef.current = false;
+                setMobileMode(false);
             }
         };
 
-        lockOrientation();
+        document.addEventListener('fullscreenchange', onFullscreenChange);
 
         return () => {
-            cancelled = true;
-            if (orientation && typeof orientation.unlock === 'function') {
-                try {
-                    orientation.unlock();
-                } catch (err) {
-                    console.warn('No se pudo liberar el bloqueo de orientación al desmontar.', err);
-                }
-            }
+            document.removeEventListener('fullscreenchange', onFullscreenChange);
         };
     }, [mobileMode]);
+
+    useEffect(() => {
+        return () => {
+            unlockOrientation();
+            if (ownsFullscreenRef.current) {
+                void exitFullscreen();
+            }
+        };
+    }, []);
 
     return (
         <div className="app">
@@ -136,7 +263,7 @@ export default function App() {
                     <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
                     <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
                     <button
-                        onClick={() => setMobileMode((prev) => !prev)}
+                        onClick={handleToggleMobileMode}
                         className={mobileMode ? 'active' : undefined}
                     >
                         {mobileMode ? 'Desktop version' : 'Mobile version'}
@@ -157,4 +284,3 @@ export default function App() {
         </div>
     );
 }
-
