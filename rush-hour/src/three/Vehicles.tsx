@@ -358,5 +358,5 @@ export default function Vehicles() {
     return <>{pieces.map(p => <Vehicle key={p.id} piece={p} />)}</>;
 }
 
-// precarga
+// precarga aaaaa
 Object.values(CAR_ASSET_PATHS).forEach((p) => useGLTF.preload(p));
