@@ -229,76 +229,76 @@ export default function App() {
 
     return (
         <div className="app">
-            {/* HUD superior */}
             <div className="hud">
-                <div className="hud-card">
-                    <span className="hud-card-title">Configuración</span>
-                    <div className="hud-card-grid">
-                        <div className="hud-field">
-                            <label htmlFor="difficulty-select">Dificultad</label>
-                            <select
-                                id="difficulty-select"
-                                value={diff}
-                                disabled={isSolving}
-                                onChange={(e) => {
-                                    const d = e.target.value as Diff;
-                                    setDiff(d);
-                                    setIdx(0);
-                                    loadLevel((d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS)[0]);
-                                }}
-                            >
-                                <option value="easy">Fácil</option>
-                                <option value="normal">Normal</option>
-                            </select>
+                <div className="hud-shell">
+                    <section className="hud-block">
+                        <header className="hud-block__header">Configuración</header>
+                        <div className="hud-grid">
+                            <label className="hud-field" htmlFor="difficulty-select">
+                                <span className="hud-field__label">Dificultad</span>
+                                <select
+                                    id="difficulty-select"
+                                    value={diff}
+                                    disabled={isSolving}
+                                    onChange={(e) => {
+                                        const d = e.target.value as Diff;
+                                        setDiff(d);
+                                        setIdx(0);
+                                        loadLevel((d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS)[0]);
+                                    }}
+                                >
+                                    <option value="easy">Fácil</option>
+                                    <option value="normal">Normal</option>
+                                </select>
+                            </label>
+                            <label className="hud-field" htmlFor="level-select">
+                                <span className="hud-field__label">Nivel</span>
+                                <select
+                                    id="level-select"
+                                    value={idx}
+                                    disabled={isSolving}
+                                    onChange={(e) => onPickLevel(Number(e.target.value))}
+                                >
+                                    {levelList.map((lv, i) => (
+                                        <option key={lv.id ?? i} value={i}>
+                                            {lv.id ?? `${diff}-${i + 1}`}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
                         </div>
+                    </section>
 
-                        <div className="hud-field">
-                            <label htmlFor="level-select">Nivel</label>
-                            <select
-                                id="level-select"
-                                value={idx}
-                                disabled={isSolving}
-                                onChange={(e) => onPickLevel(Number(e.target.value))}
+                    <section className="hud-block">
+                        <header className="hud-block__header">Acciones</header>
+                        <div className="hud-actions">
+                            <button onClick={resetLevel} disabled={isSolving}>Reiniciar</button>
+                            <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
+                            <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
+                            <button
+                                onClick={handleToggleMobileMode}
+                                className={mobileMode ? 'active' : undefined}
+                                aria-pressed={mobileMode}
                             >
-                                {levelList.map((lv, i) => (
-                                    <option key={lv.id ?? i} value={i}>
-                                        {lv.id ?? `${diff}-${i + 1}`}
-                                    </option>
-                                ))}
-                            </select>
+                                {mobileMode ? 'Desktop version' : 'Mobile version'}
+                            </button>
                         </div>
-                    </div>
-                </div>
+                    </section>
 
-                <div className="hud-card">
-                    <span className="hud-card-title">Acciones</span>
-                    <div className="hud-actions">
-                        <button onClick={resetLevel} disabled={isSolving}>Reiniciar</button>
-                        <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
-                        <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
-                        <button
-                            onClick={handleToggleMobileMode}
-                            className={mobileMode ? 'active' : undefined}
-                            aria-pressed={mobileMode}
-                        >
-                            {mobileMode ? 'Desktop version' : 'Mobile version'}
-                        </button>
-                    </div>
-                </div>
-
-                <div className="hud-card">
-                    <span className="hud-card-title">Estado</span>
-                    <div className="hud-status">
-                        <span className="hud-moves">Movs: {moves}</span>
-                        {won && <span className="badge">¡Ganaste! 🎉</span>}
-                    </div>
+                    <section className="hud-block hud-block--status">
+                        <header className="hud-block__header">Estado</header>
+                        <div className="hud-status">
+                            <span className="hud-metric">
+                                <span className="hud-metric__label">Movimientos</span>
+                                <span className="hud-metric__value">{moves}</span>
+                            </span>
+                            {won && <span className="badge">¡Ganaste! 🎉</span>}
+                        </div>
+                    </section>
                 </div>
             </div>
 
-            {/* Escena 3D */}
             <GameCanvas />
-
-            {/* Controles del solver (overlay) */}
             <SolverControls />
             <DifficultyBadge />
         </div>
