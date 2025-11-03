@@ -231,47 +231,57 @@ export default function App() {
             {/* HUD superior */}
             <div className="hud">
                 <div className="row">
-                    <label> Dificultad: </label>
-                    <select
-                        value={diff}
-                        disabled={isSolving}
-                        onChange={(e) => {
-                            const d = e.target.value as Diff;
-                            setDiff(d);
-                            setIdx(0);
-                            loadLevel((d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS)[0]);
-                        }}
-                    >
-                        <option value="easy">Fácil</option>
-                        <option value="normal">Normal</option>
-                    </select>
+                    <div className="field-group">
+                        <label htmlFor="difficulty-select">Dificultad</label>
+                        <select
+                            id="difficulty-select"
+                            value={diff}
+                            disabled={isSolving}
+                            onChange={(e) => {
+                                const d = e.target.value as Diff;
+                                setDiff(d);
+                                setIdx(0);
+                                loadLevel((d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS)[0]);
+                            }}
+                        >
+                            <option value="easy">Fácil</option>
+                            <option value="normal">Normal</option>
+                        </select>
+                    </div>
 
-                    <label style={{ marginLeft: 12 }}> Nivel: </label>
-                    <select
-                        value={idx}
-                        disabled={isSolving}
-                        onChange={(e) => onPickLevel(Number(e.target.value))}
-                    >
-                        {levelList.map((lv, i) => (
-                            <option key={lv.id ?? i} value={i}>
-                                {lv.id ?? `${diff}-${i + 1}`}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="field-group">
+                        <label htmlFor="level-select">Nivel</label>
+                        <select
+                            id="level-select"
+                            value={idx}
+                            disabled={isSolving}
+                            onChange={(e) => onPickLevel(Number(e.target.value))}
+                        >
+                            {levelList.map((lv, i) => (
+                                <option key={lv.id ?? i} value={i}>
+                                    {lv.id ?? `${diff}-${i + 1}`}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-                    <button onClick={resetLevel} disabled={isSolving}>Reiniciar</button>
-                    <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
-                    <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
-                    <button
-                        onClick={handleToggleMobileMode}
-                        className={mobileMode ? 'active' : undefined}
-                    >
-                        {mobileMode ? 'Desktop version' : 'Mobile version'}
-                    </button>
+                    <div className="actions">
+                        <button onClick={resetLevel} disabled={isSolving}>Reiniciar</button>
+                        <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
+                        <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
+                        <button
+                            onClick={handleToggleMobileMode}
+                            className={mobileMode ? 'active' : undefined}
+                            aria-pressed={mobileMode}
+                        >
+                            {mobileMode ? 'Desktop version' : 'Mobile version'}
+                        </button>
+                    </div>
 
-
-                    <span style={{ marginLeft: 12 }}>Movs: {moves}</span>
-                    {won && <span className="badge">¡Ganaste! 🎉</span>}
+                    <div className="status">
+                        <span>Movs: {moves}</span>
+                        {won && <span className="badge">¡Ganaste! 🎉</span>}
+                    </div>
                 </div>
             </div>
 
