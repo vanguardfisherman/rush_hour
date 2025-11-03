@@ -12,6 +12,13 @@
     position: absolute;
     inset: 0; /* top: 0; right: 0; bottom: 0; left: 0 */
 }
+/* Permite que los gestos táctiles lleguen al canvas sin que el navegador
+   intente hacer scroll o zoom por defecto. Esto es crucial para que el drag
+   de los vehículos responda correctamente en pantallas táctiles. */
+.stage canvas {
+    touch-action: none;
+    -ms-touch-action: none;
+}
 
 /* HUD flotante con flexbox para mayor flexibilidad */
 .hud {
