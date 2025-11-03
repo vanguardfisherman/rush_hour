@@ -6,6 +6,10 @@ export const CAR_ASSET_PATHS: Record<AssetId, string> = {
     // len2
     car_len2_blue:   'models/cars/car_blue_len2.glb',
     car_len2_gray:   'models/cars/car_gray_len_2.glb',
+    car_len2_orange:   'models/cars/car_orange_len_2.glb',
+    car_len2_pink:   'models/cars/car_pink_len_2.glb',
+    car_len2_yellow:   'models/cars/car_yellow_len_2.glb',
+
 
     // len3
     car_len3_red:    'models/cars/car_red_len_3.glb',

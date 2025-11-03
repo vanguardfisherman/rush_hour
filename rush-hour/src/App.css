@@ -1,25 +1,144 @@
 /* que la app ocupe toda la ventana */
-.app{
-    width:100vw;
-    height:100vh;
-    position:relative;
-    overflow:hidden;
-    background:#1f1f1f;
+.app {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background: #1f1f1f;
 }
 
 /* contenedor del canvas 3D a pantalla completa */
-.stage{
-    position:absolute;
-    inset:0;           /* top:0; right:0; bottom:0; left:0 */
+.stage {
+    position: absolute;
+    inset: 0; /* top: 0; right: 0; bottom: 0; left: 0 */
 }
 
-/* HUD flotante (ya la tenías; la dejo aquí por si acaso) */
-.hud{
-    position:absolute; left:12px; top:12px; z-index:10;
-    background:rgba(20,20,20,.6); backdrop-filter: blur(6px);
-    padding:8px 10px; border-radius:10px; color:#eee; font-family:system-ui,sans-serif;
+/* HUD flotante con flexbox para mayor flexibilidad */
+.hud {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    z-index: 10;
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(6px);
+    padding: 8px 10px;
+    border-radius: 10px;
+    color: #eee;
+    font-family: system-ui, sans-serif;
+    display: flex;
+    flex-direction: column; /* Asegura que los botones estén apilados en lugar de lado a lado */
+    gap: 8px;
 }
-.hud .row{ display:flex; gap:8px; align-items:center; }
-.hud select,.hud button{ padding:4px 8px; border-radius:6px; border:1px solid #444; background:#222; color:#eee; }
-.hud button:disabled{ opacity:.5; cursor:not-allowed; }
-.badge{ margin-left:10px; padding:2px 8px; background:#1f6; color:#021; border-radius:999px; font-weight:700; }
+
+.hud .row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.hud select,
+.hud button {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #222;
+    color: #eee;
+}
+
+.hud button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.badge {
+    margin-left: 10px;
+    padding: 2px 8px;
+    background: #1f6;
+    color: #021;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+/* Responsividad: Ajuste para móviles y tablets */
+
+/* Mobile Portrait */
+@media (max-width: 767px) {
+    .hud {
+        left: 8px;
+        top: auto;
+        bottom: 12px;
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+
+    .stage {
+        inset: 0;
+    }
+
+    .app {
+        background: #181818;
+    }
+
+    .hud button {
+        font-size: 12px;
+    }
+
+    .badge {
+        font-size: 12px;
+        padding: 2px 6px;
+    }
+}
+
+/* Tablet Landscape and Up */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .hud {
+        left: 12px;
+        top: 12px;
+        padding: 8px 12px;
+        font-size: 16px;
+    }
+
+    .app {
+        background: #202020;
+    }
+
+    .stage {
+        inset: 0;
+    }
+
+    .hud button {
+        font-size: 14px;
+    }
+
+    .badge {
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+}
+
+/* Desktop and Large Tablets */
+@media (min-width: 1025px) {
+    .hud {
+        left: 12px;
+        top: 12px;
+        padding: 8px 14px;
+        font-size: 18px;
+    }
+
+    .stage {
+        inset: 0;
+    }
+
+    .app {
+        background: #1f1f1f;
+    }
+
+    .hud button {
+        font-size: 16px;
+    }
+
+    .badge {
+        font-size: 16px;
+        padding: 6px 10px;
+    }
+}

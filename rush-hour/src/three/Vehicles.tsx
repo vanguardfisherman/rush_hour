@@ -46,6 +46,9 @@ function isValidAssetId(asset: string): asset is AssetId {
     return [
         'player_len2_red',
         'car_len2_blue',
+        'car_len2_pink',
+        'car_len2_yellow',
+        'car_len2_orange',
         'car_len2_gray',
         'car_len3_red',
         'car_len3_purple',
