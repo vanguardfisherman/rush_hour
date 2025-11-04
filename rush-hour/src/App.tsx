@@ -336,9 +336,13 @@ export default function App() {
 
     const currentLevel = levelList[idx];
     const currentLevelKey = currentLevel ? buildLevelKey(currentLevel, diff, idx) : undefined;
-    const currentBestMoves = currentLevelKey
-        ? progress.bestMoves[diff]?.[currentLevelKey]
-        : undefined;
+    const activeBestMoves = useMemo(() => {
+        if (!currentLevelKey) {
+            return undefined;
+        }
+
+        return getBestMoves(progress, diff, currentLevelKey);
+    }, [currentLevelKey, diff, progress]);
 
     const disableMobileMode = async () => {
         unlockOrientation();
@@ -631,6 +635,9 @@ export default function App() {
                         <span className="hud-card-title">Estado</span>
                         <div className="hud-status">
                             <span className="hud-moves">Movs: {moves}</span>
+                            {typeof activeBestMoves === 'number' && (
+                                <span className="hud-best">Mejor: {activeBestMoves}</span>
+                            )}
                             {won && <span className="badge">¡Ganaste! 🎉</span>}
                         </div>
                     </div>
@@ -657,7 +664,7 @@ export default function App() {
                 onClose={handleCloseCompletionModal}
                 onNextLevel={handleNextLevel}
                 currentMoves={moves}
-                bestMoves={currentBestMoves}
+                bestMoves={activeBestMoves}
             />
         </div>
     );

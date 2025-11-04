@@ -243,6 +243,12 @@
     letter-spacing: 0.05em;
 }
 
+.hud-best {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #c6d0f0;
+}
+
 .badge {
     padding: 4px 10px;
     background: linear-gradient(135deg, #8df38d 0%, #20c997 100%);
