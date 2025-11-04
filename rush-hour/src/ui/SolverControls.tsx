@@ -1,4 +1,5 @@
 import { useGame } from '../game/store';
+import './SolverControls.css';
 
 export default function SolverControls() {
     const isSolving      = useGame(s => s.isSolving);
@@ -8,58 +9,32 @@ export default function SolverControls() {
     const cancelSolve    = useGame(s => s.cancelSolve);
 
     return (
-        <div
-            style={{
-                position: 'absolute',
-                top: 12,
-                right: 12,
-                display: 'flex',
-                gap: 8,
-                alignItems: 'center',
-                padding: '10px 12px',
-                background: 'rgba(20,20,24,0.75)',
-                color: '#fff',
-                borderRadius: 12,
-                backdropFilter: 'blur(6px)',
-            }}
-        >
+        <div className="solver-controls">
             <button
+                type="button"
                 onClick={() => solveAndAnim()}
                 disabled={isSolving}
-                style={{
-                    padding: '6px 10px',
-                    borderRadius: 8,
-                    border: '1px solid #6ee7b7',
-                    background: isSolving ? '#274b3f' : '#10b981',
-                    color: '#0b0f0e',
-                    fontWeight: 600,
-                    cursor: isSolving ? 'not-allowed' : 'pointer',
-                }}
+                className="solver-button solver-button--primary"
                 title="Calcula y reproduce paso a paso"
             >
                 {isSolving ? 'Resolviendo…' : 'Resolver (animado)'}
             </button>
 
             <button
+                type="button"
                 onClick={cancelSolve}
                 disabled={!isSolving}
-                style={{
-                    padding: '6px 10px',
-                    borderRadius: 8,
-                    border: '1px solid #fca5a5',
-                    background: !isSolving ? '#4b2626' : '#ef4444',
-                    color: '#fff',
-                    fontWeight: 600,
-                    cursor: !isSolving ? 'not-allowed' : 'pointer',
-                }}
+                className="solver-button solver-button--danger"
                 title="Cancelar reproducción"
             >
                 Cancelar
             </button>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 12, opacity: 0.9 }}>Velocidad</span>
+            <label className="solver-speed" htmlFor="solver-speed-range">
+                <span className="solver-speed__label">Velocidad</span>
                 <input
+                    id="solver-speed-range"
+                    className="solver-speed__slider"
                     type="range"
                     min={120}
                     max={800}
@@ -68,7 +43,7 @@ export default function SolverControls() {
                     onChange={(e) => setSpeed(Number(e.target.value))}
                     title="Delay entre pasos (ms)"
                 />
-                <span style={{ fontSize: 12, opacity: 0.9 }}>{speed} ms</span>
+                <span className="solver-speed__value">{speed} ms</span>
             </label>
         </div>
     );
