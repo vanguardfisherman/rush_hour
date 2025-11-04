@@ -66,29 +66,23 @@ export const useGame = create<GameState>((set, get) => ({
     canRedo: false,
 
     loadLevel: (level) => {
-        set((state) => {
-            const nextSerial = state.levelSerial + 1;
-            const pieces = clonePieces(level.pieces);
-            const initialPieces = clonePieces(level.pieces);
-
-            return {
+        set((state) => ({
+            size: level.size,
+            exit: level.exit,
+            pieces: clonePieces(level.pieces),
+            moves: 0,
+            won: false,
+            levelSerial: state.levelSerial + 1,
+            initial: {
                 size: level.size,
                 exit: level.exit,
-                pieces,
-                moves: 0,
-                won: false,
-                levelSerial: nextSerial,
-                initial: {
-                    size: level.size,
-                    exit: level.exit,
-                    pieces: initialPieces,
-                },
-                past: [],
-                future: [],
-                canUndo: false,
-                canRedo: false,
-            };
-        });
+                pieces: clonePieces(level.pieces),
+            },
+            past: [],
+            future: [],
+            canUndo: false,
+            canRedo: false,
+        }));
     },
 
     moveTo: (id, x, y) => {
