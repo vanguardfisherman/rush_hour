@@ -23,6 +23,73 @@ const UI_SCALES = [
     { label: 'X10', value: 0.1 },
 ] as const;
 
+type LevelButtonProps = {
+    label: string;
+    isActive: boolean;
+    isLocked: boolean;
+    isDisabled: boolean;
+    onClick: () => void;
+};
+
+function LevelButton({ label, isActive, isLocked, isDisabled, onClick }: LevelButtonProps) {
+    return (
+        <button
+            type="button"
+            className={[
+                'level-button',
+                isActive ? 'active level-button--active' : undefined,
+                isLocked ? 'level-button--locked' : undefined,
+            ]
+                .filter(Boolean)
+                .join(' ')}
+            aria-pressed={isActive}
+            aria-disabled={isDisabled}
+            disabled={isDisabled}
+            onClick={onClick}
+        >
+            <span className="level-button__label">{label}</span>
+            {isLocked && (
+                <span className="level-button__lock" aria-hidden="true">
+                    🔒
+                </span>
+            )}
+        </button>
+    );
+}
+
+type LevelGridProps = {
+    levels: LevelDef[];
+    activeIndex: number;
+    unlockedLevels: boolean[];
+    isSolving: boolean;
+    diff: Diff;
+    labelId: string;
+    onPickLevel: (index: number) => void;
+};
+
+function LevelGrid({ levels, activeIndex, unlockedLevels, isSolving, diff, labelId, onPickLevel }: LevelGridProps) {
+    return (
+        <div className="level-grid" role="group" aria-labelledby={labelId}>
+            {levels.map((level, index) => {
+                const isLocked = !unlockedLevels[index];
+                const isDisabled = isLocked || isSolving;
+                const label = level.id ?? `${diff}-${index + 1}`;
+
+                return (
+                    <LevelButton
+                        key={level.id ?? index}
+                        label={label}
+                        isActive={activeIndex === index}
+                        isLocked={isLocked}
+                        isDisabled={isDisabled}
+                        onClick={() => onPickLevel(index)}
+                    />
+                );
+            })}
+        </div>
+    );
+}
+
 type ExtendedScreenOrientation = ScreenOrientation & {
     lock?: (orientation: string) => Promise<void>;
     unlock?: () => void;
@@ -130,9 +197,14 @@ export default function App() {
         [diff]
     );
     const [idx, setIdx] = useState(0);
+    const [unlockedLevels, setUnlockedLevels] = useState<boolean[]>(() =>
+        EASY_LEVELS.map((_, index) => index === 0)
+    );
     const [mobileMode, setMobileMode] = useState(false);
     const [uiScale, setUiScale] = useState<number>(UI_SCALES[0].value);
     const ownsFullscreenRef = useRef(false);
+
+    const levelLabelId = 'level-grid-label';
 
     const disableMobileMode = async () => {
         unlockOrientation();
@@ -201,6 +273,10 @@ export default function App() {
     };
 
     const onPickLevel = (i: number) => {
+        if (isSolving || !unlockedLevels[i]) {
+            return;
+        }
+
         setIdx(i);
         loadLevel(levelList[i]);
     };
@@ -240,6 +316,38 @@ export default function App() {
         };
     }, []);
 
+    useEffect(() => {
+        setUnlockedLevels((prev) => {
+            if (prev.length === levelList.length) {
+                return prev;
+            }
+
+            return levelList.map((_, index) => prev[index] ?? index === 0);
+        });
+    }, [levelList]);
+
+    useEffect(() => {
+        if (!won) {
+            return;
+        }
+
+        setUnlockedLevels((prev) => {
+            const nextIndex = idx + 1;
+
+            if (nextIndex >= levelList.length) {
+                return prev;
+            }
+
+            if (prev[nextIndex]) {
+                return prev;
+            }
+
+            const normalized = levelList.map((_, index) => prev[index] ?? index === 0);
+            normalized[nextIndex] = true;
+            return normalized;
+        });
+    }, [won, idx, levelList]);
+
     return (
         <div className="app">
             {/* HUD superior */}
@@ -259,9 +367,11 @@ export default function App() {
                                     disabled={isSolving}
                                     onChange={(e) => {
                                         const d = e.target.value as Diff;
+                                        const nextLevels = d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS;
                                         setDiff(d);
                                         setIdx(0);
-                                        loadLevel((d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS)[0]);
+                                        setUnlockedLevels(nextLevels.map((_, index) => index === 0));
+                                        loadLevel(nextLevels[0]);
                                     }}
                                 >
                                     <option value="easy">Fácil</option>
@@ -270,19 +380,18 @@ export default function App() {
                             </div>
 
                             <div className="hud-field">
-                                <label htmlFor="level-select">Nivel</label>
-                                <select
-                                    id="level-select"
-                                    value={idx}
-                                    disabled={isSolving}
-                                    onChange={(e) => onPickLevel(Number(e.target.value))}
-                                >
-                                    {levelList.map((lv, i) => (
-                                        <option key={lv.id ?? i} value={i}>
-                                            {lv.id ?? `${diff}-${i + 1}`}
-                                        </option>
-                                    ))}
-                                </select>
+                                <span className="hud-field-label" id={levelLabelId}>
+                                    Nivel
+                                </span>
+                                <LevelGrid
+                                    levels={levelList}
+                                    activeIndex={idx}
+                                    unlockedLevels={unlockedLevels}
+                                    isSolving={isSolving}
+                                    diff={diff}
+                                    labelId={levelLabelId}
+                                    onPickLevel={onPickLevel}
+                                />
                             </div>
 
                             <div className="hud-field">
