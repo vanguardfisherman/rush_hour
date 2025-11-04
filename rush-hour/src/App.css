@@ -1,11 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    color-scheme: dark;
+    --hud-bg: rgba(18, 18, 24, 0.86);
+    --hud-border: rgba(255, 255, 255, 0.12);
+    --hud-highlight: rgba(79, 195, 247, 0.28);
+    --hud-card-glow: rgba(96, 110, 255, 0.28);
+    --hud-card-glow-strong: rgba(132, 94, 247, 0.36);
+    --hud-surface: rgba(34, 34, 42, 0.95);
+    --hud-surface-strong: rgba(44, 44, 58, 0.9);
+    --hud-text: #f4f4ff;
+    --hud-muted: #aeb7d8;
+    --hud-accent: #845ef7;
+    --hud-accent-strong: #4fc3f7;
+    --hud-success: #20c997;
+}
+
 /* Estructura base */
 .app {
     width: 100vw;
     height: 100vh;
     position: relative;
     overflow: hidden;
-    background: radial-gradient(circle at top, #2b2b2b 0%, #171717 55%, #0f0f0f 100%);
-    color: #f4f4f4;
+    background: radial-gradient(circle at 16% 12%, rgba(132, 94, 247, 0.24) 0%, rgba(12, 12, 16, 0.8) 42%),
+        radial-gradient(circle at 88% 88%, rgba(79, 195, 247, 0.2) 0%, rgba(8, 8, 12, 0.9) 52%),
+        linear-gradient(140deg, #0b0b0f 0%, #13131a 35%, #09090d 100%);
+    color: var(--hud-text);
     font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
@@ -30,18 +50,78 @@
     flex-direction: column;
     gap: 16px;
     pointer-events: auto;
+    --hud-scale: 1;
+    border-radius: 20px;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(16px);
 }
 
-.hud-card {
-    background: rgba(20, 20, 22, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    padding: 18px;
+.hud-overlays {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    z-index: 11;
+}
+
+.hud-overlays-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    transform: scale(var(--hud-scale));
+    transform-origin: top right;
+}
+
+.hud-inner {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(12px);
+    transform: scale(var(--hud-scale));
+    transform-origin: top left;
+}
+
+.hud-card {
+    position: relative;
+    background: linear-gradient(155deg, var(--hud-surface) 0%, var(--hud-surface-strong) 100%);
+    border: 1px solid var(--hud-border);
+    border-radius: 18px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    box-shadow: 0 20px 42px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+}
+
+.hud-card::before {
+    content: '';
+    position: absolute;
+    inset: -40% 20% 60% -40%;
+    background: radial-gradient(circle, rgba(132, 94, 247, 0.18) 0%, rgba(132, 94, 247, 0) 55%);
+    pointer-events: none;
+    transform: rotate(8deg);
+}
+
+.hud-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 40%);
+    mix-blend-mode: screen;
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.hud-card > * {
+    position: relative;
+    z-index: 1;
 }
 
 .hud-card-title {
@@ -49,7 +129,19 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: #9ca9c9;
+    color: var(--hud-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hud-card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+    opacity: 0.7;
 }
 
 .hud-card-grid {
@@ -69,32 +161,51 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #c6d0f0;
+    color: var(--hud-text);
+    text-shadow: 0 0 12px rgba(132, 94, 247, 0.35);
+}
+
+.hud-field-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--hud-text);
+    text-shadow: 0 0 12px rgba(132, 94, 247, 0.35);
+}
+
+.hud-scale-options {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
 }
 
 .hud select,
 .hud button {
+    position: relative;
     border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 11px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
     font-size: 0.95rem;
     font-weight: 600;
-    background: rgba(34, 34, 36, 0.92);
+    background: rgba(34, 34, 38, 0.85);
     color: inherit;
-    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
-    min-height: 46px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    min-height: 48px;
+    overflow: hidden;
 }
 
 .hud select {
     appearance: none;
     cursor: pointer;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .hud select:focus {
     outline: none;
-    border-color: #7d8cff;
-    box-shadow: 0 0 0 3px rgba(125, 140, 255, 0.25);
+    border-color: rgba(132, 94, 247, 0.9);
+    box-shadow: 0 0 0 3px rgba(132, 94, 247, 0.35);
 }
 
 .hud-actions {
@@ -106,14 +217,29 @@
 .hud button {
     cursor: pointer;
     border: none;
-    background: linear-gradient(135deg, #ff6d6d 0%, #845ef7 100%);
-    box-shadow: 0 12px 24px rgba(132, 94, 247, 0.35);
+    background: linear-gradient(135deg, rgba(255, 110, 145, 0.95) 0%, rgba(132, 94, 247, 0.95) 40%, rgba(79, 195, 247, 0.95) 100%);
+    box-shadow: 0 16px 36px rgba(132, 94, 247, 0.42);
+}
+
+.hud button::before {
+    content: '';
+    position: absolute;
+    inset: -40% 20% 60% -30%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 55%);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
 }
 
 .hud button:hover:not(:disabled),
 .hud button:focus-visible:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 16px 28px rgba(132, 94, 247, 0.45);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 22px 42px rgba(132, 94, 247, 0.56);
+}
+
+.hud button:hover::before,
+.hud button:focus-visible::before {
+    opacity: 1;
 }
 
 .hud button:focus-visible {
@@ -128,8 +254,33 @@
 }
 
 .hud button.active {
-    background: linear-gradient(135deg, #4fc3f7 0%, #845ef7 100%);
-    box-shadow: 0 14px 26px rgba(79, 195, 247, 0.42);
+    background: linear-gradient(135deg, rgba(79, 195, 247, 1) 0%, rgba(132, 94, 247, 0.98) 50%, rgba(255, 110, 145, 0.95) 100%);
+    box-shadow: 0 22px 44px rgba(79, 195, 247, 0.48);
+}
+
+.hud button.hud-scale-option {
+    border: 1px solid rgba(132, 94, 247, 0.24);
+    background: linear-gradient(160deg, rgba(36, 36, 46, 0.95) 0%, rgba(30, 30, 38, 0.9) 100%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    color: var(--hud-muted);
+    min-height: 42px;
+    font-size: 0.85rem;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.hud button.hud-scale-option:hover:not(:disabled),
+.hud button.hud-scale-option:focus-visible:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    border-color: rgba(132, 94, 247, 0.5);
+    color: var(--hud-text);
+    box-shadow: 0 16px 28px rgba(132, 94, 247, 0.35);
+}
+
+.hud button.hud-scale-option.active {
+    border: none;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(79, 195, 247, 0.95) 0%, rgba(132, 94, 247, 0.95) 60%, rgba(255, 110, 145, 0.95) 100%);
+    box-shadow: 0 18px 32px rgba(79, 195, 247, 0.4);
 }
 
 .hud-status {
@@ -143,16 +294,18 @@
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: 0.05em;
+    text-shadow: 0 0 12px rgba(79, 195, 247, 0.35);
 }
 
 .badge {
-    padding: 4px 10px;
-    background: linear-gradient(135deg, #8df38d 0%, #20c997 100%);
-    color: #082e24;
+    padding: 4px 12px;
+    background: linear-gradient(135deg, rgba(141, 243, 141, 0.96) 0%, rgba(32, 201, 151, 0.96) 100%);
+    color: #06291f;
     border-radius: 999px;
     font-weight: 700;
     letter-spacing: 0.02em;
     font-size: 0.85rem;
+    box-shadow: 0 12px 22px rgba(32, 201, 151, 0.35);
 }
 
 /* Responsividad */
@@ -166,12 +319,29 @@
         gap: 14px;
     }
 
+    .hud-overlays {
+        top: auto;
+        bottom: 18px;
+        right: 50%;
+        transform: translateX(50%);
+        align-items: center;
+    }
+
+    .hud-overlays-inner {
+        align-items: center;
+        transform-origin: bottom center;
+    }
+
     .hud-card {
-        padding: 18px 20px;
+        padding: 20px 22px;
     }
 
     .hud-card-grid {
         gap: 12px;
+    }
+
+    .hud-inner {
+        transform-origin: bottom center;
     }
 
     .hud-actions {
@@ -180,7 +350,7 @@
 
     .hud button,
     .hud select {
-        min-height: 48px;
+        min-height: 50px;
         font-size: 0.98rem;
     }
 }

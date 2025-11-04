@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, type CSSProperties } from 'react';
 import { useGame } from './game/store';
 import type { LevelDef } from './game/types';
 import { EASY_LEVELS, NORMAL_LEVELS } from './game/levels';
@@ -8,8 +8,20 @@ import './App.css';
 import SolverControls from './ui/SolverControls';
 import DifficultyBadge from './ui/DifficultyBadge';
 
-const DIFFS = ['easy', 'normal'] as const;
-type Diff = (typeof DIFFS)[number];
+type Diff = 'easy' | 'normal';
+
+const UI_SCALES = [
+    { label: 'X1', value: 1 },
+    { label: 'X2', value: 0.9 },
+    { label: 'X3', value: 0.8 },
+    { label: 'X4', value: 0.7 },
+    { label: 'X5', value: 0.6 },
+    { label: 'X6', value: 0.5 },
+    { label: 'X7', value: 0.4 },
+    { label: 'X8', value: 0.3 },
+    { label: 'X9', value: 0.2 },
+    { label: 'X10', value: 0.1 },
+] as const;
 
 type ExtendedScreenOrientation = ScreenOrientation & {
     lock?: (orientation: string) => Promise<void>;
@@ -119,6 +131,7 @@ export default function App() {
     );
     const [idx, setIdx] = useState(0);
     const [mobileMode, setMobileMode] = useState(false);
+    const [uiScale, setUiScale] = useState<number>(UI_SCALES[0].value);
     const ownsFullscreenRef = useRef(false);
 
     const disableMobileMode = async () => {
@@ -230,67 +243,99 @@ export default function App() {
     return (
         <div className="app">
             {/* HUD superior */}
-            <div className="hud">
-                <div className="hud-card">
-                    <span className="hud-card-title">Configuración</span>
-                    <div className="hud-card-grid">
-                        <div className="hud-field">
-                            <label htmlFor="difficulty-select">Dificultad</label>
-                            <select
-                                id="difficulty-select"
-                                value={diff}
-                                disabled={isSolving}
-                                onChange={(e) => {
-                                    const d = e.target.value as Diff;
-                                    setDiff(d);
-                                    setIdx(0);
-                                    loadLevel((d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS)[0]);
-                                }}
-                            >
-                                <option value="easy">Fácil</option>
-                                <option value="normal">Normal</option>
-                            </select>
-                        </div>
+            <div
+                className="hud"
+                style={{ '--hud-scale': uiScale.toString() } as CSSProperties}
+            >
+                <div className="hud-inner">
+                    <div className="hud-card">
+                        <span className="hud-card-title">Configuración</span>
+                        <div className="hud-card-grid">
+                            <div className="hud-field">
+                                <label htmlFor="difficulty-select">Dificultad</label>
+                                <select
+                                    id="difficulty-select"
+                                    value={diff}
+                                    disabled={isSolving}
+                                    onChange={(e) => {
+                                        const d = e.target.value as Diff;
+                                        setDiff(d);
+                                        setIdx(0);
+                                        loadLevel((d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS)[0]);
+                                    }}
+                                >
+                                    <option value="easy">Fácil</option>
+                                    <option value="normal">Normal</option>
+                                </select>
+                            </div>
 
-                        <div className="hud-field">
-                            <label htmlFor="level-select">Nivel</label>
-                            <select
-                                id="level-select"
-                                value={idx}
-                                disabled={isSolving}
-                                onChange={(e) => onPickLevel(Number(e.target.value))}
-                            >
-                                {levelList.map((lv, i) => (
-                                    <option key={lv.id ?? i} value={i}>
-                                        {lv.id ?? `${diff}-${i + 1}`}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="hud-field">
+                                <label htmlFor="level-select">Nivel</label>
+                                <select
+                                    id="level-select"
+                                    value={idx}
+                                    disabled={isSolving}
+                                    onChange={(e) => onPickLevel(Number(e.target.value))}
+                                >
+                                    {levelList.map((lv, i) => (
+                                        <option key={lv.id ?? i} value={i}>
+                                            {lv.id ?? `${diff}-${i + 1}`}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="hud-field">
+                                <span className="hud-field-label" id="ui-scale-options-label">
+                                    Interfaz
+                                </span>
+                                <div
+                                    className="hud-scale-options"
+                                    role="group"
+                                    aria-labelledby="ui-scale-options-label"
+                                >
+                                    {UI_SCALES.map((option) => (
+                                        <button
+                                            key={option.label}
+                                            type="button"
+                                            className={
+                                                uiScale === option.value
+                                                    ? 'hud-scale-option active'
+                                                    : 'hud-scale-option'
+                                            }
+                                            aria-pressed={uiScale === option.value}
+                                            onClick={() => setUiScale(option.value)}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="hud-card">
-                    <span className="hud-card-title">Acciones</span>
-                    <div className="hud-actions">
-                        <button onClick={resetLevel} disabled={isSolving}>Reiniciar</button>
-                        <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
-                        <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
-                        <button
-                            onClick={handleToggleMobileMode}
-                            className={mobileMode ? 'active' : undefined}
-                            aria-pressed={mobileMode}
-                        >
-                            {mobileMode ? 'Desktop version' : 'Mobile version'}
-                        </button>
+                    <div className="hud-card">
+                        <span className="hud-card-title">Acciones</span>
+                        <div className="hud-actions">
+                            <button onClick={resetLevel} disabled={isSolving}>Reiniciar</button>
+                            <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
+                            <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
+                            <button
+                                onClick={handleToggleMobileMode}
+                                className={mobileMode ? 'active' : undefined}
+                                aria-pressed={mobileMode}
+                            >
+                                {mobileMode ? 'Desktop version' : 'Mobile version'}
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div className="hud-card">
-                    <span className="hud-card-title">Estado</span>
-                    <div className="hud-status">
-                        <span className="hud-moves">Movs: {moves}</span>
-                        {won && <span className="badge">¡Ganaste! 🎉</span>}
+                    <div className="hud-card">
+                        <span className="hud-card-title">Estado</span>
+                        <div className="hud-status">
+                            <span className="hud-moves">Movs: {moves}</span>
+                            {won && <span className="badge">¡Ganaste! 🎉</span>}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -298,9 +343,16 @@ export default function App() {
             {/* Escena 3D */}
             <GameCanvas />
 
-            {/* Controles del solver (overlay) */}
-            <SolverControls />
-            <DifficultyBadge />
+            {/* Controles del solver + badge de dificultad */}
+            <div className="hud-overlays">
+                <div
+                    className="hud-overlays-inner"
+                    style={{ '--hud-scale': uiScale.toString() } as CSSProperties}
+                >
+                    <SolverControls />
+                    <DifficultyBadge />
+                </div>
+            </div>
         </div>
     );
 }
