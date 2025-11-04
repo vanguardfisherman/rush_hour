@@ -100,6 +100,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 6px;
     font-size: 0.95rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -123,6 +126,17 @@
 .level-button__label {
     position: relative;
     z-index: 1;
+    text-align: center;
+}
+
+.level-button__best {
+    position: relative;
+    z-index: 1;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #9ca9c9;
 }
 
 .level-button__lock {
@@ -343,6 +357,28 @@
     color: #d0d6f7;
     line-height: 1.6;
     margin: 0;
+}
+
+.completion-modal__stats {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.95rem;
+    color: #c6d0f0;
+}
+
+.completion-modal__stats-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.completion-modal__stats-item--best {
+    font-weight: 700;
+    color: #80d8ff;
 }
 
 .completion-modal__actions {

@@ -4,10 +4,12 @@ import { useGame } from './game/store';
 import type { LevelDef } from './game/types';
 import { EASY_LEVELS, NORMAL_LEVELS } from './game/levels';
 import {
-    DEFAULT_PROGRESS,
+    createDefaultProgress,
+    getBestMoves,
     loadProgress,
     saveProgress,
     type Progress,
+    setBestMoves,
     updateProgress,
 } from './game/progress';
 import GameCanvas from './components/GameCanvas';
@@ -35,10 +37,11 @@ type LevelButtonProps = {
     isActive: boolean;
     isLocked: boolean;
     isDisabled: boolean;
+    bestMoves?: number;
     onClick: () => void;
 };
 
-function LevelButton({ label, isActive, isLocked, isDisabled, onClick }: LevelButtonProps) {
+function LevelButton({ label, isActive, isLocked, isDisabled, bestMoves, onClick }: LevelButtonProps) {
     return (
         <button
             type="button"
@@ -55,6 +58,9 @@ function LevelButton({ label, isActive, isLocked, isDisabled, onClick }: LevelBu
             onClick={onClick}
         >
             <span className="level-button__label">{label}</span>
+            {typeof bestMoves === 'number' && (
+                <span className="level-button__best">Mejor: {bestMoves} movimientos</span>
+            )}
             {isLocked && (
                 <span className="level-button__lock" aria-hidden="true">
                     🔒
@@ -69,19 +75,21 @@ type LevelGridProps = {
     levels: LevelDef[];
     activeIndex: number;
     unlockedLevels: boolean[];
+    bestMoves: (number | undefined)[];
     isSolving: boolean;
     diff: Diff;
     labelId: string;
     onPickLevel: (index: number) => void;
 };
 
-function LevelGrid({ levels, activeIndex, unlockedLevels, isSolving, diff, labelId, onPickLevel }: LevelGridProps) {
+function LevelGrid({ levels, activeIndex, unlockedLevels, bestMoves, isSolving, diff, labelId, onPickLevel }: LevelGridProps) {
     return (
         <div className="level-grid" role="group" aria-labelledby={labelId}>
             {levels.map((level, index) => {
                 const isLocked = !unlockedLevels[index];
                 const isDisabled = isLocked || isSolving;
-                const label = level.id ?? `${diff}-${index + 1}`;
+                const label = buildLevelKey(level, diff, index);
+                const moves = bestMoves[index];
 
                 return (
                     <LevelButton
@@ -90,6 +98,7 @@ function LevelGrid({ levels, activeIndex, unlockedLevels, isSolving, diff, label
                         isActive={activeIndex === index}
                         isLocked={isLocked}
                         isDisabled={isDisabled}
+                        bestMoves={moves}
                         onClick={() => onPickLevel(index)}
                     />
                 );
@@ -103,9 +112,11 @@ type CompletionModalProps = {
     hasNextLevel: boolean;
     onNextLevel: () => void;
     onClose: () => void;
+    currentMoves: number;
+    bestMoves?: number;
 };
 
-function CompletionModal({ isOpen, hasNextLevel, onNextLevel, onClose }: CompletionModalProps) {
+function CompletionModal({ isOpen, hasNextLevel, onNextLevel, onClose, currentMoves, bestMoves }: CompletionModalProps) {
     if (!isOpen) {
         return null;
     }
@@ -131,6 +142,14 @@ function CompletionModal({ isOpen, hasNextLevel, onNextLevel, onClose }: Complet
                         ? 'Prepárate para el siguiente desafío.'
                         : '¡Has completado todos los niveles disponibles!'}
                 </p>
+                <ul className="completion-modal__stats">
+                    <li className="completion-modal__stats-item">Movimientos: {currentMoves}</li>
+                    {typeof bestMoves === 'number' && (
+                        <li className="completion-modal__stats-item completion-modal__stats-item--best">
+                            Mejor: {bestMoves} movimientos
+                        </li>
+                    )}
+                </ul>
                 <div className="completion-modal__actions">
                     <button type="button" className="completion-modal__button" onClick={hasNextLevel ? onNextLevel : onClose}>
                         {hasNextLevel ? 'Siguiente nivel' : 'Cerrar'}
@@ -238,6 +257,36 @@ const exitFullscreen = async () => {
     return false;
 };
 
+const buildLevelKey = (level: LevelDef, diff: Diff, index: number) => level.id ?? `${diff}-${index + 1}`;
+
+const areBestMovesEqual = (a: Record<string, number>, b: Record<string, number>) => {
+    if (a === b) {
+        return true;
+    }
+
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+
+    if (aKeys.length !== bKeys.length) {
+        return false;
+    }
+
+    return aKeys.every((key) => a[key] === b[key]);
+};
+
+const isSameProgress = (a: Progress, b: Progress) => {
+    if (a === b) {
+        return true;
+    }
+
+    return (
+        a.unlocked.easy === b.unlocked.easy &&
+        a.unlocked.normal === b.unlocked.normal &&
+        areBestMovesEqual(a.bestMoves.easy, b.bestMoves.easy) &&
+        areBestMovesEqual(a.bestMoves.normal, b.bestMoves.normal)
+    );
+};
+
 export default function App() {
     // === store ===
     const loadLevel  = useGame(s => s.loadLevel);
@@ -257,9 +306,7 @@ export default function App() {
         [diff]
     );
     const [idx, setIdx] = useState(0);
-    const [progress, setProgress] = useState<Progress>({
-        ...DEFAULT_PROGRESS,
-    });
+    const [progress, setProgress] = useState<Progress>(() => createDefaultProgress());
     const [mobileMode, setMobileMode] = useState(false);
     const [uiScale, setUiScale] = useState<number>(UI_SCALES[0].value);
     const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -274,13 +321,24 @@ export default function App() {
         }
 
         const maxIndex = levelList.length - 1;
-        return Math.max(0, Math.min(progress[diff] ?? 0, maxIndex));
+        return Math.max(0, Math.min(progress.unlocked[diff] ?? 0, maxIndex));
     }, [diff, levelList, progress]);
 
     const unlockedLevels = useMemo(
         () => levelList.map((_, index) => index <= maxUnlockedIndex),
         [levelList, maxUnlockedIndex]
     );
+
+    const bestMovesByLevel = useMemo(() => {
+        const activeBestMoves = progress.bestMoves[diff] ?? {};
+        return levelList.map((level, index) => activeBestMoves[buildLevelKey(level, diff, index)]);
+    }, [diff, levelList, progress]);
+
+    const currentLevel = levelList[idx];
+    const currentLevelKey = currentLevel ? buildLevelKey(currentLevel, diff, idx) : undefined;
+    const currentBestMoves = currentLevelKey
+        ? progress.bestMoves[diff]?.[currentLevelKey]
+        : undefined;
 
     const disableMobileMode = async () => {
         unlockOrientation();
@@ -415,12 +473,22 @@ export default function App() {
     }, [idx, levelList, loadLevel]);
 
     useEffect(() => {
+        const level = levelList[idx];
+        const levelKey = level ? buildLevelKey(level, diff, idx) : undefined;
+
         if (won && !previousWonRef.current) {
             setShowCompletionModal(true);
             setProgress((prev) => {
-                const next = updateProgress(prev, diff, idx + 1);
+                let next = updateProgress(prev, diff, idx + 1);
 
-                if (next.easy === prev.easy && next.normal === prev.normal) {
+                if (level && levelKey) {
+                    const previousBest = getBestMoves(prev, diff, levelKey);
+                    if (previousBest === undefined || moves < previousBest) {
+                        next = setBestMoves(next, diff, levelKey, moves);
+                    }
+                }
+
+                if (isSameProgress(next, prev)) {
                     return prev;
                 }
 
@@ -432,7 +500,7 @@ export default function App() {
         }
 
         previousWonRef.current = won;
-    }, [won, diff, idx]);
+    }, [won, diff, idx, moves, levelList]);
 
     const hasNextLevel = idx + 1 < levelList.length;
 
@@ -484,7 +552,7 @@ export default function App() {
                                         const d = e.target.value as Diff;
                                         const nextLevels = d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS;
                                         const nextMaxUnlocked = Math.min(
-                                            progress[d] ?? 0,
+                                            progress.unlocked[d] ?? 0,
                                             nextLevels.length - 1,
                                         );
                                         const nextIndex = Math.max(0, Math.min(idx, nextMaxUnlocked));
@@ -506,6 +574,7 @@ export default function App() {
                                     levels={levelList}
                                     activeIndex={idx}
                                     unlockedLevels={unlockedLevels}
+                                    bestMoves={bestMovesByLevel}
                                     isSolving={isSolving}
                                     diff={diff}
                                     labelId={levelLabelId}
@@ -587,6 +656,8 @@ export default function App() {
                 hasNextLevel={hasNextLevel}
                 onClose={handleCloseCompletionModal}
                 onNextLevel={handleNextLevel}
+                currentMoves={moves}
+                bestMoves={currentBestMoves}
             />
         </div>
     );
