@@ -17,6 +17,7 @@ export type GameState = {
     pieces: PieceSpec[];
     moves: number;
     won: boolean;
+    levelSerial: number;
 
     // para reset
     initial: { size: Size; exit: LevelDef['exit']; pieces: PieceSpec[] } | null;
@@ -55,6 +56,7 @@ export const useGame = create<GameState>((set, get) => ({
     pieces: [],
     moves: 0,
     won: false,
+    levelSerial: 0,
 
     initial: null,
 
@@ -64,21 +66,28 @@ export const useGame = create<GameState>((set, get) => ({
     canRedo: false,
 
     loadLevel: (level) => {
-        set({
-            size: level.size,
-            exit: level.exit,
-            pieces: clonePieces(level.pieces),
-            moves: 0,
-            won: false,
-            initial: {
+        set((state) => {
+            const nextSerial = state.levelSerial + 1;
+            const pieces = clonePieces(level.pieces);
+            const initialPieces = clonePieces(level.pieces);
+
+            return {
                 size: level.size,
                 exit: level.exit,
-                pieces: clonePieces(level.pieces),
-            },
-            past: [],
-            future: [],
-            canUndo: false,
-            canRedo: false,
+                pieces,
+                moves: 0,
+                won: false,
+                levelSerial: nextSerial,
+                initial: {
+                    size: level.size,
+                    exit: level.exit,
+                    pieces: initialPieces,
+                },
+                past: [],
+                future: [],
+                canUndo: false,
+                canRedo: false,
+            };
         });
     },
 
