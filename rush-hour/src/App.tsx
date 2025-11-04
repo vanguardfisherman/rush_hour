@@ -64,6 +64,7 @@ function LevelButton({ label, isActive, isLocked, isDisabled, onClick }: LevelBu
     );
 }
 
+
 type LevelGridProps = {
     levels: LevelDef[];
     activeIndex: number;
@@ -93,6 +94,58 @@ function LevelGrid({ levels, activeIndex, unlockedLevels, isSolving, diff, label
                     />
                 );
             })}
+        </div>
+    );
+}
+
+type CompletionModalProps = {
+    isOpen: boolean;
+    hasNextLevel: boolean;
+    onNextLevel: () => void;
+    onClose: () => void;
+};
+
+function CompletionModal({ isOpen, hasNextLevel, onNextLevel, onClose }: CompletionModalProps) {
+    if (!isOpen) {
+        return null;
+    }
+
+    return (
+        <div
+            className="completion-modal__backdrop"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="completion-modal-title"
+            onClick={onClose}
+        >
+            <div
+                className="completion-modal__content"
+                role="document"
+                onClick={(event) => event.stopPropagation()}
+            >
+                <h2 className="completion-modal__title" id="completion-modal-title">
+                    ¡Nivel completado!
+                </h2>
+                <p className="completion-modal__message">
+                    {hasNextLevel
+                        ? 'Prepárate para el siguiente desafío.'
+                        : '¡Has completado todos los niveles disponibles!'}
+                </p>
+                <div className="completion-modal__actions">
+                    <button type="button" className="completion-modal__button" onClick={hasNextLevel ? onNextLevel : onClose}>
+                        {hasNextLevel ? 'Siguiente nivel' : 'Cerrar'}
+                    </button>
+                    {hasNextLevel && (
+                        <button
+                            type="button"
+                            className="completion-modal__button completion-modal__button--secondary"
+                            onClick={onClose}
+                        >
+                            Seguir en este nivel
+                        </button>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
@@ -209,6 +262,7 @@ export default function App() {
     });
     const [mobileMode, setMobileMode] = useState(false);
     const [uiScale, setUiScale] = useState<number>(UI_SCALES[0].value);
+    const [showCompletionModal, setShowCompletionModal] = useState(false);
     const ownsFullscreenRef = useRef(false);
     const previousWonRef = useRef(won);
 
@@ -300,6 +354,7 @@ export default function App() {
         }
 
         setIdx(i);
+        setShowCompletionModal(false);
     };
 
     useEffect(() => {
@@ -361,6 +416,7 @@ export default function App() {
 
     useEffect(() => {
         if (won && !previousWonRef.current) {
+            setShowCompletionModal(true);
             setProgress((prev) => {
                 const next = updateProgress(prev, diff, idx + 1);
 
@@ -371,10 +427,41 @@ export default function App() {
                 saveProgress(next);
                 return next;
             });
+        } else if (!won && previousWonRef.current) {
+            setShowCompletionModal(false);
         }
 
         previousWonRef.current = won;
     }, [won, diff, idx]);
+
+    const hasNextLevel = idx + 1 < levelList.length;
+
+    const handleCloseCompletionModal = () => {
+        setShowCompletionModal(false);
+    };
+
+    const handleNextLevel = () => {
+        if (!hasNextLevel) {
+            setShowCompletionModal(false);
+            return;
+        }
+
+        const nextIndex = idx + 1;
+        const nextLevel = levelList[nextIndex];
+
+        if (nextLevel) {
+            loadLevel(nextLevel);
+        }
+
+        setIdx(nextIndex);
+        resetLevel();
+        setShowCompletionModal(false);
+    };
+
+    const handleResetLevel = () => {
+        setShowCompletionModal(false);
+        resetLevel();
+    };
 
     return (
         <div className="app">
@@ -401,6 +488,7 @@ export default function App() {
                                             nextLevels.length - 1,
                                         );
                                         const nextIndex = Math.max(0, Math.min(idx, nextMaxUnlocked));
+                                        setShowCompletionModal(false);
                                         setDiff(d);
                                         setIdx(nextIndex);
                                     }}
@@ -457,7 +545,7 @@ export default function App() {
                     <div className="hud-card">
                         <span className="hud-card-title">Acciones</span>
                         <div className="hud-actions">
-                            <button onClick={resetLevel} disabled={isSolving}>Reiniciar</button>
+                            <button onClick={handleResetLevel} disabled={isSolving}>Reiniciar</button>
                             <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
                             <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
                             <button
@@ -493,6 +581,13 @@ export default function App() {
                     <DifficultyBadge />
                 </div>
             </div>
+
+            <CompletionModal
+                isOpen={showCompletionModal}
+                hasNextLevel={hasNextLevel}
+                onClose={handleCloseCompletionModal}
+                onNextLevel={handleNextLevel}
+            />
         </div>
     );
 }
