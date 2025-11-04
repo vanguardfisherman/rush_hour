@@ -355,7 +355,8 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
 
 export default function Vehicles() {
     const pieces = useGame(s => s.pieces);
-    return <>{pieces.map(p => <Vehicle key={p.id} piece={p} />)}</>;
+    const levelSerial = useGame(s => s.levelSerial);
+    return <>{pieces.map(p => <Vehicle key={`${levelSerial}-${p.id}`} piece={p} />)}</>;
 }
 
 // precarga
