@@ -336,6 +336,19 @@
         gap: 14px;
     }
 
+    .hud-overlays {
+        top: auto;
+        bottom: 18px;
+        right: 50%;
+        transform: translateX(50%);
+        align-items: center;
+    }
+
+    .hud-overlays-inner {
+        align-items: center;
+        transform-origin: bottom center;
+    }
+
     .hud-card {
         padding: 20px 22px;
     }

@@ -343,9 +343,16 @@ export default function App() {
             {/* Escena 3D */}
             <GameCanvas />
 
-            {/* Controles del solver (overlay) */}
-            <SolverControls />
-            <DifficultyBadge />
+            {/* Controles del solver + badge de dificultad */}
+            <div className="hud-overlays">
+                <div
+                    className="hud-overlays-inner"
+                    style={{ '--hud-scale': uiScale.toString() } as CSSProperties}
+                >
+                    <SolverControls />
+                    <DifficultyBadge />
+                </div>
+            </div>
         </div>
     );
 }

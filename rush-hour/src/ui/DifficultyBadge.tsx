@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { useGame } from '../game/store';
 import { solveLevelBFS } from '../game/solver/core';
+import './DifficultyBadge.css';
 
 export default function DifficultyBadge() {
     const size   = useGame(s => s.size);
@@ -21,19 +22,9 @@ export default function DifficultyBadge() {
             : 'sin solución';
 
     return (
-        <div
-            style={{
-                position: 'absolute',
-                top: 56,
-                right: 12,
-                padding: '6px 10px',
-                borderRadius: 8,
-                background: 'rgba(255,255,255,0.12)',
-                color: '#fff',
-                fontWeight: 600,
-            }}
-        >
-            Dificultad (BFS): {label}
+        <div className="difficulty-badge">
+            <span className="difficulty-badge__title">Dificultad (BFS)</span>
+            <span className="difficulty-badge__value">{label}</span>
         </div>
     );
 }
