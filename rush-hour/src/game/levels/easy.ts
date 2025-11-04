@@ -5,7 +5,7 @@ import type { LevelDef } from '../types';
 export const EASY_LEVELS: LevelDef[] = [
     // e01
     {
-        id: 'e01',
+        id: '1',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
@@ -25,7 +25,7 @@ export const EASY_LEVELS: LevelDef[] = [
 
     // e02
     {
-        id: 'e02',
+        id: '2',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
@@ -45,7 +45,7 @@ export const EASY_LEVELS: LevelDef[] = [
 
     // e03
     {
-        id: 'e03',
+        id: '3',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
@@ -65,7 +65,7 @@ export const EASY_LEVELS: LevelDef[] = [
 
     // e04
     {
-        id: 'e04',
+        id: '4',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
@@ -88,7 +88,7 @@ export const EASY_LEVELS: LevelDef[] = [
 
     // e05
     {
-        id: 'e05',
+        id: '5',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
@@ -107,7 +107,7 @@ export const EASY_LEVELS: LevelDef[] = [
 
     // e06
     {
-        id: 'e06',
+        id: '6',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
@@ -127,7 +127,7 @@ export const EASY_LEVELS: LevelDef[] = [
 
     // e07
     {
-        id: 'e07',
+        id: '7',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
@@ -148,7 +148,7 @@ export const EASY_LEVELS: LevelDef[] = [
 
     // e08
     {
-        id: 'e08',
+        id: '8',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
@@ -168,7 +168,7 @@ export const EASY_LEVELS: LevelDef[] = [
 
     // e09
     {
-        id: 'e09',
+        id: '9',
         size: 6,
         difficulty: 'easy',
         exit: { side: 'top', index: 3 },
