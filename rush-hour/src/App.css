@@ -30,6 +30,15 @@
     flex-direction: column;
     gap: 16px;
     pointer-events: auto;
+    --hud-scale: 1;
+}
+
+.hud-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transform: scale(var(--hud-scale));
+    transform-origin: top left;
 }
 
 .hud-card {
@@ -72,6 +81,20 @@
     color: #c6d0f0;
 }
 
+.hud-field-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #c6d0f0;
+}
+
+.hud-scale-options {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
 .hud select,
 .hud button {
     border-radius: 14px;
@@ -97,18 +120,8 @@
     box-shadow: 0 0 0 3px rgba(125, 140, 255, 0.25);
 }
 
-.hud-actions {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-}
 
-.hud button {
-    cursor: pointer;
-    border: none;
-    background: linear-gradient(135deg, #ff6d6d 0%, #845ef7 100%);
-    box-shadow: 0 12px 24px rgba(132, 94, 247, 0.35);
-}
+
 
 .hud button:hover:not(:disabled),
 .hud button:focus-visible:not(:disabled) {
@@ -130,6 +143,29 @@
 .hud button.active {
     background: linear-gradient(135deg, #4fc3f7 0%, #845ef7 100%);
     box-shadow: 0 14px 26px rgba(79, 195, 247, 0.42);
+}
+
+.hud button.hud-scale-option {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(34, 34, 36, 0.92);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    color: #c6d0f0;
+    min-height: 42px;
+    font-size: 0.85rem;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.hud button.hud-scale-option:hover:not(:disabled),
+.hud button.hud-scale-option:focus-visible:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(132, 94, 247, 0.25);
+}
+
+.hud button.hud-scale-option.active {
+    border: none;
+    color: #fff;
+    background: linear-gradient(135deg, #4fc3f7 0%, #845ef7 100%);
+    box-shadow: 0 12px 24px rgba(79, 195, 247, 0.35);
 }
 
 .hud-status {
@@ -172,6 +208,10 @@
 
     .hud-card-grid {
         gap: 12px;
+    }
+
+    .hud-inner {
+        transform-origin: bottom center;
     }
 
     .hud-actions {
