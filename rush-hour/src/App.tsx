@@ -3,6 +3,13 @@ import { useState, useMemo, useEffect, useRef, type CSSProperties } from 'react'
 import { useGame } from './game/store';
 import type { LevelDef } from './game/types';
 import { EASY_LEVELS, NORMAL_LEVELS } from './game/levels';
+import {
+    DEFAULT_PROGRESS,
+    loadProgress,
+    saveProgress,
+    type Progress,
+    updateProgress,
+} from './game/progress';
 import GameCanvas from './components/GameCanvas';
 import './App.css';
 import SolverControls from './ui/SolverControls';
@@ -197,14 +204,29 @@ export default function App() {
         [diff]
     );
     const [idx, setIdx] = useState(0);
-    const [unlockedLevels, setUnlockedLevels] = useState<boolean[]>(() =>
-        EASY_LEVELS.map((_, index) => index === 0)
-    );
+    const [progress, setProgress] = useState<Progress>({
+        ...DEFAULT_PROGRESS,
+    });
     const [mobileMode, setMobileMode] = useState(false);
     const [uiScale, setUiScale] = useState<number>(UI_SCALES[0].value);
     const ownsFullscreenRef = useRef(false);
+    const previousWonRef = useRef(won);
 
     const levelLabelId = 'level-grid-label';
+
+    const maxUnlockedIndex = useMemo(() => {
+        if (levelList.length === 0) {
+            return 0;
+        }
+
+        const maxIndex = levelList.length - 1;
+        return Math.max(0, Math.min(progress[diff] ?? 0, maxIndex));
+    }, [diff, levelList, progress]);
+
+    const unlockedLevels = useMemo(
+        () => levelList.map((_, index) => index <= maxUnlockedIndex),
+        [levelList, maxUnlockedIndex]
+    );
 
     const disableMobileMode = async () => {
         unlockOrientation();
@@ -273,19 +295,12 @@ export default function App() {
     };
 
     const onPickLevel = (i: number) => {
-        if (isSolving || !unlockedLevels[i]) {
+        if (isSolving || i > maxUnlockedIndex || !levelList[i]) {
             return;
         }
 
         setIdx(i);
-        loadLevel(levelList[i]);
     };
-
-    // carga inicial (usar efecto, no useMemo)
-    useEffect(() => {
-        loadLevel(levelList[idx]);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // una vez al montar
 
     useEffect(() => {
         if (typeof document === 'undefined') {
@@ -317,36 +332,49 @@ export default function App() {
     }, []);
 
     useEffect(() => {
-        setUnlockedLevels((prev) => {
-            if (prev.length === levelList.length) {
-                return prev;
-            }
-
-            return levelList.map((_, index) => prev[index] ?? index === 0);
-        });
-    }, [levelList]);
+        setProgress(loadProgress());
+    }, []);
 
     useEffect(() => {
-        if (!won) {
+        setIdx((current) => {
+            if (levelList.length === 0) {
+                return current;
+            }
+
+            const safeMax = Math.max(0, maxUnlockedIndex);
+            if (current <= safeMax) {
+                return current;
+            }
+
+            return safeMax;
+        });
+    }, [levelList, maxUnlockedIndex]);
+
+    useEffect(() => {
+        const level = levelList[idx];
+        if (!level) {
             return;
         }
 
-        setUnlockedLevels((prev) => {
-            const nextIndex = idx + 1;
+        loadLevel(level);
+    }, [idx, levelList, loadLevel]);
 
-            if (nextIndex >= levelList.length) {
-                return prev;
-            }
+    useEffect(() => {
+        if (won && !previousWonRef.current) {
+            setProgress((prev) => {
+                const next = updateProgress(prev, diff, idx + 1);
 
-            if (prev[nextIndex]) {
-                return prev;
-            }
+                if (next.easy === prev.easy && next.normal === prev.normal) {
+                    return prev;
+                }
 
-            const normalized = levelList.map((_, index) => prev[index] ?? index === 0);
-            normalized[nextIndex] = true;
-            return normalized;
-        });
-    }, [won, idx, levelList]);
+                saveProgress(next);
+                return next;
+            });
+        }
+
+        previousWonRef.current = won;
+    }, [won, diff, idx]);
 
     return (
         <div className="app">
@@ -368,10 +396,13 @@ export default function App() {
                                     onChange={(e) => {
                                         const d = e.target.value as Diff;
                                         const nextLevels = d === 'easy' ? EASY_LEVELS : NORMAL_LEVELS;
+                                        const nextMaxUnlocked = Math.min(
+                                            progress[d] ?? 0,
+                                            nextLevels.length - 1,
+                                        );
+                                        const nextIndex = Math.max(0, Math.min(idx, nextMaxUnlocked));
                                         setDiff(d);
-                                        setIdx(0);
-                                        setUnlockedLevels(nextLevels.map((_, index) => index === 0));
-                                        loadLevel(nextLevels[0]);
+                                        setIdx(nextIndex);
                                     }}
                                 >
                                     <option value="easy">Fácil</option>
