@@ -15,6 +15,12 @@ const UI_SCALES = [
     { label: 'X2', value: 0.9 },
     { label: 'X3', value: 0.8 },
     { label: 'X4', value: 0.7 },
+    { label: 'X5', value: 0.6 },
+    { label: 'X6', value: 0.5 },
+    { label: 'X7', value: 0.4 },
+    { label: 'X8', value: 0.3 },
+    { label: 'X9', value: 0.2 },
+    { label: 'X10', value: 0.1 },
 ] as const;
 
 type ExtendedScreenOrientation = ScreenOrientation & {
