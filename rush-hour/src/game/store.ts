@@ -15,6 +15,7 @@ export type BoardMetrics = {
     cellSize: number | null;
     originOffset: [number, number, number] | null;
     padding: number;
+    ready: boolean;
 };
 
 export const selectBoardMetrics = (state: GameState) => state.boardMetrics;
@@ -85,6 +86,7 @@ export const useGame = create<GameState>((set, get) => ({
         cellSize: null,
         originOffset: null,
         padding: 0,
+        ready: false,
     },
 
     setBoardMetrics: (metrics) =>
@@ -98,6 +100,7 @@ export const useGame = create<GameState>((set, get) => ({
                 cellSize: null,
                 originOffset: null,
                 padding: state.boardMetrics.padding,
+                ready: false,
             },
         })),
 
@@ -127,6 +130,7 @@ export const useGame = create<GameState>((set, get) => ({
                 ...state.boardMetrics,
                 cellSize: null,
                 originOffset: null,
+                ready: false,
             },
         }));
     },

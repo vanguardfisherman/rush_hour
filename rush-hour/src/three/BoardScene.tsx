@@ -21,6 +21,11 @@ export default function BoardScene() {
     }, [scene, size]);
 
     useEffect(() => {
+        const fallbackHalf = (size - 1) / 2;
+        const fallbackOrigin: [number, number, number] = [-fallbackHalf, 0, fallbackHalf];
+        const pushFallback = () =>
+            setBoardMetrics({ cellSize: 1, originOffset: fallbackOrigin, ready: false });
+
         const originMarker = scene.getObjectByName('grid_origin');
         const xMarker = scene.getObjectByName('grid_x7');
 
@@ -29,8 +34,10 @@ export default function BoardScene() {
                 'BoardScene: no se encontraron los marcadores requeridos (grid_origin, grid_x7) en el GLB',
                 { hasOrigin: Boolean(originMarker), hasXMarker: Boolean(xMarker) }
             );
-            setBoardMetrics({ cellSize: null, originOffset: null });
-            return;
+            pushFallback();
+            return () => {
+                setBoardMetrics({ cellSize: null, originOffset: null, ready: false });
+            };
         }
 
         scene.updateMatrixWorld(true);
@@ -55,19 +62,31 @@ export default function BoardScene() {
             .multiplyScalar(scale)
             .sub(centerOffset);
         const originOffsetArray = originOffsetVector.toArray() as [number, number, number];
-        const originOffset = originOffsetArray.every((value) => Number.isFinite(value))
-            ? originOffsetArray
-            : null;
+        const originOffsetValid = originOffsetArray.every((value) => Number.isFinite(value));
 
-        if (!originOffset) {
-            console.warn('BoardScene: originOffset inválido calculado a partir del GLB', {
-                originOffsetArray,
+        if (!cellSize || !originOffsetValid) {
+            if (!cellSize) {
+                console.warn('BoardScene: cellSize inválido calculado a partir del GLB', {
+                    computedCell,
+                    steps,
+                });
+            }
+            if (!originOffsetValid) {
+                console.warn('BoardScene: originOffset inválido calculado a partir del GLB', {
+                    originOffsetArray,
+                });
+            }
+            pushFallback();
+        } else {
+            setBoardMetrics({
+                cellSize,
+                originOffset: originOffsetArray,
+                ready: true,
             });
         }
 
-        setBoardMetrics({ cellSize, originOffset });
         return () => {
-            setBoardMetrics({ cellSize: null, originOffset: null });
+            setBoardMetrics({ cellSize: null, originOffset: null, ready: false });
         };
     }, [scene, scale, size, setBoardMetrics]);
 
