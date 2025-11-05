@@ -22,31 +22,21 @@ function roundHalfUp(n: number, t = SNAP_THRESHOLD) {
 const EXIT_EXTRA = 1.2; // celdas “más allá” para la animación de salida
 const WIN_EPS = 0.02;   // tolerancia para considerar que ya llegó al destino de salida
 
-type ResolvedBoardMetrics = {
+type BoardMetricsReady = {
     cellSize: number;
     originOffset: [number, number, number];
     padding: number;
-    ready: boolean;
 };
 
-function useBoardMetrics(size: number): ResolvedBoardMetrics {
-    const { cellSize, originOffset, padding, ready } = useGame(selectBoardMetrics);
-    return useMemo<ResolvedBoardMetrics>(() => {
-        if (cellSize != null && originOffset != null) {
-            return { cellSize, originOffset, padding: padding ?? 0, ready };
-        }
-
-        const half = (size - 1) / 2;
-        return {
-            cellSize: 1,
-            originOffset: [-half, 0, half],
-            padding: padding ?? 0,
-            ready: false,
-        };
-    }, [cellSize, originOffset, padding, ready, size]);
+function useBoardMetrics(): BoardMetricsReady | null {
+    const { cellSize, originOffset, padding } = useGame(selectBoardMetrics);
+    return useMemo(() => {
+        if (cellSize == null || originOffset == null) return null;
+        return { cellSize, originOffset, padding };
+    }, [cellSize, originOffset, padding]);
 }
 
-function cellToWorld(cx: number, cy: number, metrics: ResolvedBoardMetrics) {
+function cellToWorld(cx: number, cy: number, metrics: BoardMetricsReady) {
     const { cellSize, originOffset, padding } = metrics;
     const [ox, , oz] = originOffset;
     const pad = padding ?? 0;
@@ -94,8 +84,8 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
     const moveTo = useGame(s => s.moveTo);
     const setWon = useGame(s => s.setWon);
     const exit   = useGame(s => s.exit); // puede ser null al cargar
-    const boardMetrics = useBoardMetrics(size);
-    const metricsRef = useRef<ResolvedBoardMetrics>(boardMetrics);
+    const boardMetrics = useBoardMetrics();
+    const metricsRef = useRef<BoardMetricsReady | null>(null);
 
     useEffect(() => {
         metricsRef.current = boardMetrics;
@@ -180,6 +170,7 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
 
     // posición inicial del REAL (una vez)
     useEffect(() => {
+        if (!boardMetrics) return;
         if (initialized.current) return;
         const start = cellToWorld(baseCx, baseCy, boardMetrics);
         groupRef.current?.position.set(start.x, lift, start.z);
@@ -189,6 +180,7 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
 
     // si hay undo/redo/reset, reorienta el target al nuevo x/y del store
     useEffect(() => {
+        if (!boardMetrics) return;
         if (drag || exiting.current) return;
         const curCx = piece.dir === 'h' ? piece.x + (piece.len - 1) / 2 : piece.x;
         const curCy = piece.dir === 'v' ? piece.y + (piece.len - 1) / 2 : piece.y;
@@ -265,6 +257,11 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
 
         // si aún no hay exit, mover normal y salir
         const metrics = metricsRef.current;
+        if (!metrics) {
+            setDrag(null);
+            return;
+        }
+
         if (!exit) {
             target.current = cellToWorld(destCx, destCy, metrics);
             if (canPlace(piece, nx, ny, pieces, size)) moveTo(piece.id, nx, ny);
@@ -319,6 +316,8 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
     useFrame((_, dt) => {
         const g = groupRef.current;
         if (!g) return;
+        if (!metricsRef.current) return;
+
         g.position.x += (target.current.x - g.position.x) * SMOOTH * dt;
         g.position.z += (target.current.z - g.position.z) * SMOOTH * dt;
 
@@ -351,6 +350,10 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
         ghostCx = piece.dir === 'h' ? nx + (piece.len - 1) / 2 : baseCx;
         ghostCy = piece.dir === 'v' ? ny + (piece.len - 1) / 2 : baseCy;
     }
+    if (!boardMetrics) {
+        return null;
+    }
+
     const ghostWorld = cellToWorld(ghostCx, ghostCy, boardMetrics);
 
     return (
