@@ -11,6 +11,17 @@ function clonePieces(arr: PieceSpec[]): PieceSpec[] {
 
 const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 
+export type BoardMetrics = {
+    cellSize: number | null;
+    originOffset: [number, number, number] | null;
+    padding: number;
+};
+
+export const selectBoardMetrics = (state: GameState) => state.boardMetrics;
+export const selectCellSize = (state: GameState) => state.boardMetrics.cellSize;
+export const selectOriginOffset = (state: GameState) => state.boardMetrics.originOffset;
+export const selectBoardPadding = (state: GameState) => state.boardMetrics.padding;
+
 export type GameState = {
     size: Size;
     exit: LevelDef['exit'] | null;
@@ -27,6 +38,11 @@ export type GameState = {
     future: Snapshot[];
     canUndo: boolean;
     canRedo: boolean;
+
+    boardMetrics: BoardMetrics;
+    setBoardMetrics: (metrics: Partial<BoardMetrics>) => void;
+    resetBoardMetrics: () => void;
+    setBoardPadding: (padding: number) => void;
 
     // acciones base
     loadLevel: (level: LevelDef) => void;
@@ -65,6 +81,31 @@ export const useGame = create<GameState>((set, get) => ({
     canUndo: false,
     canRedo: false,
 
+    boardMetrics: {
+        cellSize: null,
+        originOffset: null,
+        padding: 0,
+    },
+
+    setBoardMetrics: (metrics) =>
+        set((state) => ({
+            boardMetrics: { ...state.boardMetrics, ...metrics },
+        })),
+
+    resetBoardMetrics: () =>
+        set((state) => ({
+            boardMetrics: {
+                cellSize: null,
+                originOffset: null,
+                padding: state.boardMetrics.padding,
+            },
+        })),
+
+    setBoardPadding: (padding) =>
+        set((state) => ({
+            boardMetrics: { ...state.boardMetrics, padding },
+        })),
+
     loadLevel: (level) => {
         set((state) => ({
             size: level.size,
@@ -82,6 +123,11 @@ export const useGame = create<GameState>((set, get) => ({
             future: [],
             canUndo: false,
             canRedo: false,
+            boardMetrics: {
+                ...state.boardMetrics,
+                cellSize: null,
+                originOffset: null,
+            },
         }));
     },
 
@@ -232,3 +278,5 @@ export const useGame = create<GameState>((set, get) => ({
         }
     },
 }));
+
+export const useBoardMetrics = () => useGame(selectBoardMetrics);
