@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF, Center } from '@react-three/drei';
 import { Box3, Vector3, Group, Plane } from 'three';
-import { useGame, selectBoardMetrics } from '../game/store';
+import { useGame } from '../game/store';
 import { CAR_ASSET_PATHS } from '../game/types/assets';
 import type { PieceSpec, AssetId } from '../game/types';  // Asegúrate de que 'AssetId' esté importado
 import { canPlace, clampRangeWithBlocks } from '../game/logic';
@@ -22,28 +22,9 @@ function roundHalfUp(n: number, t = SNAP_THRESHOLD) {
 const EXIT_EXTRA = 1.2; // celdas “más allá” para la animación de salida
 const WIN_EPS = 0.02;   // tolerancia para considerar que ya llegó al destino de salida
 
-type BoardMetricsReady = {
-    cellSize: number;
-    originOffset: [number, number, number];
-    padding: number;
-};
-
-function useBoardMetrics(): BoardMetricsReady | null {
-    const { cellSize, originOffset, padding } = useGame(selectBoardMetrics);
-    return useMemo(() => {
-        if (cellSize == null || originOffset == null) return null;
-        return { cellSize, originOffset, padding };
-    }, [cellSize, originOffset, padding]);
-}
-
-function cellToWorld(cx: number, cy: number, metrics: BoardMetricsReady) {
-    const { cellSize, originOffset, padding } = metrics;
-    const [ox, , oz] = originOffset;
-    const pad = padding ?? 0;
-    return {
-        x: ox + pad + cx * cellSize,
-        z: oz - pad - cy * cellSize,
-    };
+function cellToWorld(size: 6 | 7, cx: number, cy: number) {
+    const half = (size - 1) / 2;
+    return { x: cx - half, z: half - cy };
 }
 
 // clonar materiales para NO compartir entre real y fantasma
@@ -84,13 +65,6 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
     const moveTo = useGame(s => s.moveTo);
     const setWon = useGame(s => s.setWon);
     const exit   = useGame(s => s.exit); // puede ser null al cargar
-    const boardMetrics = useBoardMetrics();
-    const metricsRef = useRef<BoardMetricsReady | null>(null);
-
-    useEffect(() => {
-        metricsRef.current = boardMetrics;
-        initialized.current = false;
-    }, [boardMetrics]);
 
     // Validamos si el 'asset' es válido antes de cargar el GLTF
     if (!isValidAssetId(piece.asset)) {
@@ -170,22 +144,20 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
 
     // posición inicial del REAL (una vez)
     useEffect(() => {
-        if (!boardMetrics) return;
         if (initialized.current) return;
-        const start = cellToWorld(baseCx, baseCy, boardMetrics);
+        const start = cellToWorld(size, baseCx, baseCy);
         groupRef.current?.position.set(start.x, lift, start.z);
         target.current = start;
         initialized.current = true;
-    }, [boardMetrics, lift, baseCx, baseCy]);
+    }, [size, lift]);
 
     // si hay undo/redo/reset, reorienta el target al nuevo x/y del store
     useEffect(() => {
-        if (!boardMetrics) return;
         if (drag || exiting.current) return;
         const curCx = piece.dir === 'h' ? piece.x + (piece.len - 1) / 2 : piece.x;
         const curCy = piece.dir === 'v' ? piece.y + (piece.len - 1) / 2 : piece.y;
-        target.current = cellToWorld(curCx, curCy, boardMetrics);
-    }, [piece.x, piece.y, piece.dir, piece.len, drag, boardMetrics]);
+        target.current = cellToWorld(size, curCx, curCy);
+    }, [piece.x, piece.y, piece.dir, piece.len, size, drag]);
 
     // cursores
     const onPointerEnter = () => (document.body.style.cursor = 'grab');
@@ -256,14 +228,8 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
         const movedUp    = (drag?.cy ?? drag?.cy0 ?? baseCy) < (drag?.cy0 ?? baseCy);
 
         // si aún no hay exit, mover normal y salir
-        const metrics = metricsRef.current;
-        if (!metrics) {
-            setDrag(null);
-            return;
-        }
-
         if (!exit) {
-            target.current = cellToWorld(destCx, destCy, metrics);
+            target.current = cellToWorld(size, destCx, destCy);
             if (canPlace(piece, nx, ny, pieces, size)) moveTo(piece.id, nx, ny);
             setDrag(null);
             return;
@@ -280,22 +246,22 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
         if (piece.id === 'P' && aligned) {
             if (exit.side === 'right'  && nx === (size - piece.len) && movedRight) {
                 const outCx = destCx + EXIT_EXTRA;
-                exitTarget.current = cellToWorld(outCx, destCy, metrics);
+                exitTarget.current = cellToWorld(size, outCx, destCy);
                 didExit = true;
             }
             if (exit.side === 'left'   && nx === 0 && movedLeft) {
                 const outCx = destCx - EXIT_EXTRA;
-                exitTarget.current = cellToWorld(outCx, destCy, metrics);
+                exitTarget.current = cellToWorld(size, outCx, destCy);
                 didExit = true;
             }
             if (exit.side === 'bottom' && ny === (size - piece.len) && movedDown) {
                 const outCy = destCy + EXIT_EXTRA;
-                exitTarget.current = cellToWorld(destCx, outCy, metrics);
+                exitTarget.current = cellToWorld(size, destCx, outCy);
                 didExit = true;
             }
             if (exit.side === 'top'    && ny === 0 && movedUp) {
                 const outCy = destCy - EXIT_EXTRA;
-                exitTarget.current = cellToWorld(destCx, outCy, metrics);
+                exitTarget.current = cellToWorld(size, destCx, outCy);
                 didExit = true;
             }
         }
@@ -304,7 +270,7 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
             target.current = exitTarget.current; // anima fuera del tablero
             exiting.current = true;
         } else {
-            target.current = cellToWorld(destCx, destCy, metrics); // movimiento normal
+            target.current = cellToWorld(size, destCx, destCy); // movimiento normal
         }
 
         // persistir posición dentro del tablero
@@ -316,7 +282,6 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
     useFrame((_, dt) => {
         const g = groupRef.current;
         if (!g) return;
-        if (!metricsRef.current) return;
 
         g.position.x += (target.current.x - g.position.x) * SMOOTH * dt;
         g.position.z += (target.current.z - g.position.z) * SMOOTH * dt;
@@ -350,11 +315,7 @@ function Vehicle({ piece }: { piece: PieceSpec }) {
         ghostCx = piece.dir === 'h' ? nx + (piece.len - 1) / 2 : baseCx;
         ghostCy = piece.dir === 'v' ? ny + (piece.len - 1) / 2 : baseCy;
     }
-    if (!boardMetrics) {
-        return null;
-    }
-
-    const ghostWorld = cellToWorld(ghostCx, ghostCy, boardMetrics);
+    const ghostWorld = cellToWorld(size, ghostCx, ghostCy);
 
     return (
         <>
