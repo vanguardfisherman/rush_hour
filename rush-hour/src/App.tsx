@@ -41,7 +41,7 @@ type LevelButtonProps = {
     onClick: () => void;
 };
 
-function LevelButton({ label, isActive, isLocked, isDisabled, bestMoves, onClick }: LevelButtonProps) {
+function LevelButton({ label, isActive, isLocked, isDisabled, onClick }: LevelButtonProps) {
     return (
         <button
             type="button"
@@ -58,9 +58,7 @@ function LevelButton({ label, isActive, isLocked, isDisabled, bestMoves, onClick
             onClick={onClick}
         >
             <span className="level-button__label">{label}</span>
-            {typeof bestMoves === 'number' && (
-                <span className="level-button__best">Mejor: {bestMoves} movimientos</span>
-            )}
+
             {isLocked && (
                 <span className="level-button__lock" aria-hidden="true">
                     🔒
