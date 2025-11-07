@@ -62,5 +62,71 @@ export const NORMAL_LEVELS: LevelDef[] = [
             { id: 'N75', len: 3, dir: 'v', x: 6, y: 0, asset: 'car_len3_red' },
             { id: 'N9', len: 4, dir: 'v', x: 1, y: 1, asset: 'car_len4_red' }
         ],
-    }
+    },
+    {
+    id: 'n04',
+    size: 7,
+    difficulty: 'normal',
+    exit: { side: 'top', index: 3 },
+pieces: [
+    { id: 'P', len: 2, dir: 'v', x: 3, y: 5, asset: 'player_len2_red' },
+    { id: 'A', len: 3, dir: 'h', x: 3, y: 4, asset: 'car_len3_mili' },
+    { id: 'N1', len: 4, dir: 'v', x: 5, y: 0, asset: 'car_len4_gray' },
+    { id: 'N11', len: 4, dir: 'v', x: 6, y: 3, asset: 'car_len4_gray' },
+    { id: 'N127', len: 2, dir: 'h', x: 0, y: 0, asset: 'car_len2_blue' },
+    { id: 'N2', len: 4, dir: 'v', x: 2, y: 0, asset: 'car_len4_yellow' },
+    { id: 'N218', len: 2, dir: 'h', x: 4, y: 6, asset: 'car_len2_blue' },
+    { id: 'N3', len: 3, dir: 'v', x: 0, y: 2, asset: 'car_len3_purple' },
+    { id: 'N43', len: 3, dir: 'h', x: 0, y: 6, asset: 'car_len3_mili' },
+    { id: 'N52', len: 3, dir: 'h', x: 0, y: 5, asset: 'car_len3_purple' },
+    { id: 'N7', len: 2, dir: 'h', x: 3, y: 2, asset: 'car_len2_gray' },
+    { id: 'N75', len: 3, dir: 'v', x: 6, y: 0, asset: 'car_len3_red' },
+    { id: 'N9', len: 4, dir: 'v', x: 1, y: 1, asset: 'car_len4_red' }
+],
+},
+
+{
+    id: 'n05',
+        size: 7,
+    difficulty: 'normal',
+    exit: { side: 'top', index: 3 },
+    pieces: [
+        { id: 'P', len: 2, dir: 'v', x: 3, y: 5, asset: 'player_len2_red' },
+        { id: 'A', len: 3, dir: 'h', x: 2, y: 4, asset: 'car_len3_mili' },
+        { id: 'N1', len: 2, dir: 'v', x: 0, y: 0, asset: 'car_len2_blue' },
+        { id: 'N14', len: 2, dir: 'v', x: 1, y: 3, asset: 'car_len2_blue' },
+        { id: 'N15', len: 3, dir: 'h', x: 1, y: 1, asset: 'car_len3_red' },
+        { id: 'N2', len: 3, dir: 'v', x: 4, y: 1, asset: 'car_len3_purple' },
+        { id: 'N21', len: 2, dir: 'h', x: 2, y: 2, asset: 'car_len2_gray' },
+        { id: 'N260', len: 2, dir: 'h', x: 2, y: 0, asset: 'car_len2_blue' },
+        { id: 'N3', len: 4, dir: 'v', x: 0, y: 3, asset: 'car_len4_yellow' },
+        { id: 'N35', len: 3, dir: 'h', x: 4, y: 0, asset: 'car_len3_mili' },
+        { id: 'N4', len: 3, dir: 'h', x: 4, y: 6, asset: 'car_len3_red' },
+        { id: 'N50', len: 3, dir: 'v', x: 6, y: 2, asset: 'car_len3_purple' },
+        { id: 'N6', len: 3, dir: 'h', x: 4, y: 5, asset: 'car_len3_red' }
+    ],
+},
+
+{
+    id: 'n06',
+        size: 7,
+    difficulty: 'normal',
+    exit: { side: 'top', index: 3 },
+    pieces: [
+        { id: 'P', len: 2, dir: 'v', x: 3, y: 5, asset: 'player_len2_red' },
+        { id: 'A', len: 2, dir: 'h', x: 3, y: 4, asset: 'car_len2_blue' },
+        { id: 'N1', len: 3, dir: 'h', x: 0, y: 0, asset: 'car_len3_red' },
+        { id: 'N11', len: 3, dir: 'v', x: 6, y: 2, asset: 'car_len3_purple' },
+        { id: 'N13', len: 3, dir: 'h', x: 2, y: 3, asset: 'car_len3_mili' },
+        { id: 'N185', len: 3, dir: 'h', x: 3, y: 2, asset: 'car_len3_red' },
+        { id: 'N19', len: 2, dir: 'v', x: 0, y: 2, asset: 'car_len2_gray' },
+        { id: 'N2', len: 3, dir: 'h', x: 3, y: 1, asset: 'car_len3_mili' },
+        { id: 'N20', len: 3, dir: 'v', x: 1, y: 2, asset: 'car_len3_mili' },
+        { id: 'N31', len: 2, dir: 'v', x: 2, y: 1, asset: 'car_len2_blue' },
+        { id: 'N4', len: 3, dir: 'v', x: 5, y: 3, asset: 'car_len3_red' },
+        { id: 'N5', len: 3, dir: 'h', x: 0, y: 6, asset: 'car_len3_mili' },
+        { id: 'N60', len: 3, dir: 'h', x: 3, y: 0, asset: 'car_len3_purple' },
+        { id: 'N68', len: 2, dir: 'v', x: 6, y: 0, asset: 'car_len2_blue' }
+    ],
+},
 ];
