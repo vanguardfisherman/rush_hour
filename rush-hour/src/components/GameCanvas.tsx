@@ -38,7 +38,7 @@ export default function GameCanvas() {
                 />
 
                 <Suspense fallback={null}>
-                    <Bounds fit clip observe margin={1.08}>
+                    <Bounds key={size} fit clip margin={1.08}>
                         <group>
                             <BoardScene />
                             <Vehicles />
