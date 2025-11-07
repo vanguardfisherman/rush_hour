@@ -17,19 +17,11 @@ const BoundsRefitter = () => {
         if (lastSerialRef.current === levelSerial) return;
         lastSerialRef.current = levelSerial;
 
-        let rafB: number | null = null;
-        const rafA = requestAnimationFrame(() => {
-            rafB = requestAnimationFrame(() => {
-                bounds.refresh().fit();
-            });
+        const raf = requestAnimationFrame(() => {
+            bounds.refresh().fit();
         });
 
-        return () => {
-            cancelAnimationFrame(rafA);
-            if (rafB !== null) {
-                cancelAnimationFrame(rafB);
-            }
-        };
+        return () => cancelAnimationFrame(raf);
     }, [bounds, levelSerial, cellSize, originOffset]);
 
     return null;
@@ -37,7 +29,6 @@ const BoundsRefitter = () => {
 
 export default function GameCanvas() {
     const size = useGame(s => s.size) as 6 | 7;
-    const levelSerial = useGame(s => s.levelSerial);
 
     // Cámara isométrica + zoom por tamaño
     const { camPos, zoom } = useMemo(() => {
@@ -68,7 +59,7 @@ export default function GameCanvas() {
                 />
 
                 <Suspense fallback={null}>
-                    <Bounds key={`${size}-${levelSerial}`} fit clip margin={1.08}>
+                    <Bounds key={size} fit clip margin={1.08}>
                         <BoundsRefitter />
                         <group>
                             <BoardScene />
