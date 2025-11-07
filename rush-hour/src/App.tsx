@@ -19,6 +19,8 @@ import DifficultyBadge from './ui/DifficultyBadge';
 
 type Diff = 'easy' | 'normal';
 
+const DIFFICULTY_STORAGE_KEY = 'rush-hour-last-difficulty';
+
 const UI_SCALES = [
     { label: 'X1', value: 1 },
     { label: 'X2', value: 0.9 },
@@ -298,7 +300,14 @@ export default function App() {
     const isSolving  = useGame(s => s.isSolving);
 
     // === UI local ===
-    const [diff, setDiff] = useState<Diff>('easy');
+    const [diff, setDiff] = useState<Diff>(() => {
+        if (typeof window === 'undefined') {
+            return 'easy';
+        }
+
+        const storedDiff = window.localStorage.getItem(DIFFICULTY_STORAGE_KEY);
+        return storedDiff === 'normal' || storedDiff === 'easy' ? storedDiff : 'easy';
+    });
     const levelList: LevelDef[] = useMemo(
         () => (diff === 'easy' ? EASY_LEVELS : NORMAL_LEVELS),
         [diff]
@@ -561,6 +570,16 @@ export default function App() {
                                         setShowCompletionModal(false);
                                         setDiff(d);
                                         setIdx(nextIndex);
+
+                                        if (typeof window !== 'undefined') {
+                                            try {
+                                                window.localStorage.setItem(DIFFICULTY_STORAGE_KEY, d);
+                                            } catch (err) {
+                                                console.warn('No se pudo guardar la dificultad seleccionada.', err);
+                                            }
+
+                                            window.location.reload();
+                                        }
                                     }}
                                 >
                                     <option value="easy">Fácil</option>
