@@ -1,10 +1,31 @@
 // src/components/GameCanvas.tsx
 import { Canvas } from '@react-three/fiber';
-import { OrthographicCamera, Bounds } from '@react-three/drei';
-import { Suspense, useMemo } from 'react';
-import { useGame } from '../game/store';
+import { OrthographicCamera, Bounds, useBounds } from '@react-three/drei';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { selectBoardMetrics, useGame } from '../game/store';
 import BoardScene from '../three/BoardScene';
 import Vehicles from '../three/Vehicles';
+
+function BoundsRefitter() {
+    const bounds = useBounds();
+    const levelSerial = useGame(s => s.levelSerial);
+    const { cellSize, originOffset } = useGame(selectBoardMetrics);
+    const lastSerialRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (!cellSize || !originOffset) return;
+        if (lastSerialRef.current === levelSerial) return;
+        lastSerialRef.current = levelSerial;
+
+        const raf = requestAnimationFrame(() => {
+            bounds.refresh().fit();
+        });
+
+        return () => cancelAnimationFrame(raf);
+    }, [bounds, levelSerial, cellSize, originOffset]);
+
+    return null;
+}
 
 export default function GameCanvas() {
     const size = useGame(s => s.size) as 6 | 7;
