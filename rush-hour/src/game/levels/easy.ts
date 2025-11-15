@@ -11,15 +11,14 @@ export const EASY_LEVELS: LevelDef[] = [
         exit: { side: 'top', index: 3 },
         pieces: [
             { id: 'P',  len: 2, dir: 'v', x: 3, y: 3, asset: 'player_len2_red' },
-            { id: 'A',  len: 2, dir: 'h', x: 2, y: 2, asset: 'car_len2_pink' },
-            { id: 'N15',len: 3, dir: 'v', x: 2, y: 3, asset: 'car_len3_mili' },
-            { id: 'N18',len: 4, dir: 'v', x: 4, y: 2, asset: 'car_len4_yellow' },
+            { id: 'A',  len: 3, dir: 'h', x: 2, y: 2, asset: 'car_len2_redferrari' },
+            { id: 'N15',len: 3, dir: 'v', x: 2, y: 3, asset: 'car_len2_eva01motorbike' },
             { id: 'N2', len: 2, dir: 'h', x: 4, y: 0, asset: 'car_len2_yellow' }, // ← antes blue
-            { id: 'N20',len: 3, dir: 'v', x: 0, y: 0, asset: 'car_len3_purple' },
-            { id: 'N33',len: 3, dir: 'h', x: 1, y: 1, asset: 'car_len3_purple' },
-            { id: 'N4', len: 3, dir: 'v', x: 5, y: 1, asset: 'car_len3_purple' },
-            { id: 'N5', len: 3, dir: 'v', x: 1, y: 2, asset: 'car_len3_mili' },
-            { id: 'N6', len: 3, dir: 'h', x: 1, y: 0, asset: 'car_len3_mili' },
+            { id: 'N20',len: 3, dir: 'v', x: 0, y: 0, asset: 'car_len2_grayclassiccar' },
+            { id: 'N33',len: 3, dir: 'h', x: 1, y: 1, asset: 'car_len2_pinkclassiccar' },
+            { id: 'N4', len: 3, dir: 'v', x: 5, y: 1, asset: 'car_len2_pinkferrari' },
+            { id: 'N5', len: 3, dir: 'v', x: 1, y: 2, asset: 'car_len2_pinkmotorbike' },
+            { id: 'N6', len: 3, dir: 'h', x: 1, y: 0, asset: 'car_len2_redclassicar' },
         ],
     },
 

@@ -56,6 +56,16 @@ function isValidAssetId(asset: string): asset is AssetId {
         'car_len4_red',
         'car_len4_yellow',
         'car_len4_gray',
+        'car_len2_eva01ferrari',
+        'car_len2_eva01motorbike',
+        'car_len2_grayclassiccar',
+        'car_len2_pinkclassiccar',
+        'car_len2_pinkferrari',
+        'car_len2_pinkmotorbike',
+        'car_len2_redclassicar',
+        'car_len2_redmotorbike',
+        'car_len2_yellowblackmotorbike',
+        'car_len2_redferrari',
     ].includes(asset);
 }
 
