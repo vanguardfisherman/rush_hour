@@ -13,6 +13,7 @@ import {
     updateProgress,
 } from './game/progress';
 import GameCanvas from './components/GameCanvas';
+import TutorialModal from './components/TutorialModal';
 import './App.css';
 import SolverControls from './ui/SolverControls';
 import DifficultyBadge from './ui/DifficultyBadge';
@@ -308,6 +309,7 @@ export default function App() {
     const [mobileMode, setMobileMode] = useState(false);
     const [uiScale, setUiScale] = useState<number>(UI_SCALES[0].value);
     const [showCompletionModal, setShowCompletionModal] = useState(false);
+    const [showTutorial, setShowTutorial] = useState(false);
     const ownsFullscreenRef = useRef(false);
     const previousWonRef = useRef(won);
 
@@ -407,6 +409,11 @@ export default function App() {
             }
         }
     };
+
+
+    const handleOpenTutorial = () => setShowTutorial(true);
+    const handleCloseTutorial = () => setShowTutorial(false);
+
 
     const onPickLevel = (i: number) => {
         if (isSolving || i > maxUnlockedIndex || !levelList[i]) {
@@ -619,6 +626,9 @@ export default function App() {
                             <button onClick={handleResetLevel} disabled={isSolving}>Reiniciar</button>
                             <button onClick={undo} disabled={!canUndo || isSolving}>Deshacer</button>
                             <button onClick={redo} disabled={!canRedo || isSolving}>Rehacer</button>
+                            <button type="button" onClick={handleOpenTutorial} aria-haspopup="dialog">
+                                Tutorial
+                            </button>
                             <button
                                 onClick={handleToggleMobileMode}
                                 className={mobileMode ? 'active' : undefined}
@@ -655,6 +665,8 @@ export default function App() {
                     <DifficultyBadge />
                 </div>
             </div>
+
+            <TutorialModal isOpen={showTutorial} onClose={handleCloseTutorial} />
 
             <CompletionModal
                 isOpen={showCompletionModal}
