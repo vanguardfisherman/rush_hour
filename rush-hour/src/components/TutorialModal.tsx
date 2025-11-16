@@ -58,10 +58,7 @@ export default function TutorialModal({ isOpen, onClose }: TutorialModalProps) {
                     <img src={tutorialGif} alt="Animación del tutorial del juego" className="tutorial-modal__image" />
                 </div>
 
-                <p className="tutorial-modal__hint">
-                    Reemplaza este GIF cuando lo tengas listo en <code>src/assets/tutorial-placeholder.gif</code> para ver tu
-                    versión final.
-                </p>
+
 
                 <button type="button" className="tutorial-modal__action" onClick={onClose}>
                     ¡Listo, a jugar!

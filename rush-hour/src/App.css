@@ -481,7 +481,7 @@
 
 .tutorial-modal__content {
     position: relative;
-    width: min(900px, 90vw);
+    width: min(550px, 90vw);
     max-height: min(80vh, 720px);
     padding: 32px 36px;
     border-radius: 28px;
