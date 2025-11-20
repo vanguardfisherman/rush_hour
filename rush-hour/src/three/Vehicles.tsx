@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF, Center, Html } from '@react-three/drei';
+import { useGLTF, Center } from '@react-three/drei';
 import { Box3, Vector3, Group, Plane } from 'three';
 import { useGame } from '../game/store';
 import { CAR_ASSET_PATHS } from '../game/types/assets';
@@ -70,7 +70,7 @@ function isValidAssetId(asset: string): asset is AssetId {
     ].includes(asset);
 }
 
-function Vehicle({ piece, showTargetIndicator }: { piece: PieceSpec; showTargetIndicator: boolean }) {
+function Vehicle({ piece }: { piece: PieceSpec }) {
     const size   = useGame(s => s.size);
     const pieces = useGame(s => s.pieces);
     const moveTo = useGame(s => s.moveTo);
@@ -82,8 +82,6 @@ function Vehicle({ piece, showTargetIndicator }: { piece: PieceSpec; showTargetI
         console.error(`Invalid asset: ${piece.asset}`);
         return null; // No renderizamos el vehículo si el asset es inválido
     }
-
-    const isPlayer = piece.id === 'P';
 
     // cargar GLB
     const { scene } = useGLTF(CAR_ASSET_PATHS[piece.asset]);
@@ -346,18 +344,6 @@ function Vehicle({ piece, showTargetIndicator }: { piece: PieceSpec; showTargetI
                 <Center disableY>
                     <primitive object={realModel} />
                 </Center>
-                {showTargetIndicator && isPlayer && (
-                    <Html
-                        center
-                        position={[0, lift + 0.4, 0]}
-                        style={{ pointerEvents: 'none' }}
-                    >
-                        <div className="target-indicator" aria-hidden>
-                            <span className="target-indicator__ring" />
-                            <span className="target-indicator__core" />
-                        </div>
-                    </Html>
-                )}
             </group>
 
             {/* Fantasma (no interactivo) */}
@@ -378,20 +364,10 @@ function Vehicle({ piece, showTargetIndicator }: { piece: PieceSpec; showTargetI
     );
 }
 
-export default function Vehicles({ showTargetIndicator = false }: { showTargetIndicator?: boolean }) {
+export default function Vehicles() {
     const pieces = useGame(s => s.pieces);
     const levelSerial = useGame(s => s.levelSerial);
-    return (
-        <>
-            {pieces.map((p) => (
-                <Vehicle
-                    key={`${levelSerial}-${p.id}`}
-                    piece={p}
-                    showTargetIndicator={showTargetIndicator}
-                />
-            ))}
-        </>
-    );
+    return <>{pieces.map(p => <Vehicle key={`${levelSerial}-${p.id}`} piece={p} />)}</>;
 }
 
 // precarga
