@@ -21,12 +21,8 @@ export type Difficulty = 'easy' | 'normal' | 'hard' | 'expert';
 // Asegúrate de tener la exportación de AssetId aquí
 export type AssetId =
     | 'player_len2_red'
-    | 'car_len2_blue'
-    | 'car_len2_gray'
-    | 'car_len2_orange'
-    | 'car_len2_pink'
-    | 'car_len2_yellow'
     | 'car_len3_red'
+    | 'car_len3_black'
     | 'car_len3_purple'
     | 'car_len3_mili'
     | 'car_len4_red'

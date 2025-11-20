@@ -45,6 +45,7 @@ function cloneMaterialsFor(o: any, tweak?: (m: any) => void) {
 function isValidAssetId(asset: string): asset is AssetId {
     return [
         'player_len2_red',
+        'car_len3_black',
         'car_len2_blue',
         'car_len2_pink',
         'car_len2_yellow',

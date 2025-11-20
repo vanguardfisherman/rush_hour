@@ -4,11 +4,6 @@ export const CAR_ASSET_PATHS: Record<AssetId, string> = {
     player_len2_red: 'models/cars/car_red_player_len2.glb',
 
     // len2
-    car_len2_blue:   'models/cars/car_blue_len2.glb',
-    car_len2_gray:   'models/cars/car_gray_len_2.glb',
-    car_len2_orange:   'models/cars/car_orange_len_2.glb',
-    car_len2_pink:   'models/cars/car_pink_len_2.glb',
-    car_len2_yellow:   'models/cars/car_yellow_len_2.glb',
     car_len2_eva01ferrari:   'models/cars/eva01ferrari-len2.glb',
     car_len2_eva01motorbike:   'models/cars/eva01motorbike-len2.glb',
     car_len2_grayclassiccar:   'models/cars/grayclassiccar-len2.glb',
@@ -27,6 +22,7 @@ export const CAR_ASSET_PATHS: Record<AssetId, string> = {
     car_len3_red:    'models/cars/car_red_len_3.glb',
     car_len3_purple: 'models/cars/car_purple_len_3.glb',
     car_len3_mili:   'models/cars/car_mili_len_3.glb',
+    car_len3_black: 'models/cars/car_len3_black.glb',
 
     // len4
     car_len4_red:    'models/cars/car_red_len_4.glb',
