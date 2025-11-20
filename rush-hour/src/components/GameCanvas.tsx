@@ -6,7 +6,11 @@ import { useGame } from '../game/store';
 import BoardScene from '../three/BoardScene';
 import Vehicles from '../three/Vehicles';
 
-export default function GameCanvas() {
+type GameCanvasProps = {
+    showTargetIndicator: boolean;
+};
+
+export default function GameCanvas({ showTargetIndicator }: GameCanvasProps) {
     const size = useGame(s => s.size) as 6 | 7;
 
     // Cámara isométrica + zoom por tamaño
@@ -41,7 +45,7 @@ export default function GameCanvas() {
                     <Bounds key={size} clip margin={1.08}>
                         <group>
                             <BoardScene />
-                            <Vehicles />
+                            <Vehicles showTargetIndicator={showTargetIndicator} />
                         </group>
                     </Bounds>
                 </Suspense>
