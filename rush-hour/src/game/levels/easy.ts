@@ -17,8 +17,8 @@ export const EASY_LEVELS: LevelDef[] = [
             { id: 'N13', len: 3, dir: 'v', x: 0, y: 2, asset: 'car_len3_red' },
             { id: 'N15', len: 3, dir: 'h', x: 1, y: 1, asset: 'car_len3_mili' },
             { id: 'N22', len: 4, dir: 'v', x: 5, y: 0, asset: 'car_len4_gray' },
-            { id: 'N229', len: 2, dir: 'h', x: 3, y: 0, asset: 'car_len2_yellowblackmotorbike' },
-            { id: 'N4', len: 2, dir: 'h', x: 1, y: 3, asset: 'car_len2_yellowblackmotorbike' },
+            { id: 'N229', len: 2, dir: 'h', x: 3, y: 0, asset: 'car_len2_redclassicar' },
+            { id: 'N4', len: 2, dir: 'h', x: 1, y: 3, asset: 'car_len2_redferrari' },
             { id: 'N9', len: 3, dir: 'h', x: 0, y: 0, asset: 'car_len3_red' }
         ],
     },
