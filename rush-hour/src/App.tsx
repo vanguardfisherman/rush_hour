@@ -310,7 +310,6 @@ export default function App() {
     const [uiScale, setUiScale] = useState<number>(UI_SCALES[0].value);
     const [showCompletionModal, setShowCompletionModal] = useState(false);
     const [showTutorial, setShowTutorial] = useState(false);
-    const [showTargetIndicator, setShowTargetIndicator] = useState(false);
     const ownsFullscreenRef = useRef(false);
     const previousWonRef = useRef(won);
 
@@ -414,9 +413,6 @@ export default function App() {
 
     const handleOpenTutorial = () => setShowTutorial(true);
     const handleCloseTutorial = () => setShowTutorial(false);
-    const handleToggleTargetIndicator = () => {
-        setShowTargetIndicator((current) => !current);
-    };
 
 
     const onPickLevel = (i: number) => {
@@ -634,14 +630,6 @@ export default function App() {
                                 Tutorial
                             </button>
                             <button
-                                type="button"
-                                onClick={handleToggleTargetIndicator}
-                                className={showTargetIndicator ? 'active' : undefined}
-                                aria-pressed={showTargetIndicator}
-                            >
-                                {showTargetIndicator ? 'Ocultar objetivo' : 'Resaltar objetivo'}
-                            </button>
-                            <button
                                 onClick={handleToggleMobileMode}
                                 className={mobileMode ? 'active' : undefined}
                                 aria-pressed={mobileMode}
@@ -665,7 +653,7 @@ export default function App() {
             </div>
 
             {/* Escena 3D */}
-            <GameCanvas showTargetIndicator={showTargetIndicator} />
+            <GameCanvas />
 
             {/* Controles del solver + badge de dificultad */}
             <div className="hud-overlays">
